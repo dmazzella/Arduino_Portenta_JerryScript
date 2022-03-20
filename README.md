@@ -4,8 +4,16 @@
 
 Integrate [ArduinoCore-mbed](https://github.com/arduino/ArduinoCore-mbed) and modern JavaScript standards (ECMAScript 5/6/6+) powered by [JerryScript](https://github.com/jerryscript-project/jerryscript).
 
+It is an initial state, see Goals for a list of things supported and which will be supported in the future
+
 ## Tested on:
-  - [Portenta H7](https://www.arduino.cc/pro/hardware/product/portenta-h7) on M7 core
+ - [Portenta H7](https://www.arduino.cc/pro/hardware/product/portenta-h7) on M7 core
+
+## Goals:
+
+ - [x] Working JerryScript engine
+ - [ ] Working Repl
+ - [ ] Expose Arduino HW API in javascript
 
 ## Examples:
 
