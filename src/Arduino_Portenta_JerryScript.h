@@ -36,6 +36,21 @@
  * DEFINE
  ******************************************************************************/
 
+/**
+ * Major version of Arduino_Portenta_JerryScript API.
+ */
+#define ARDUINO_PORTENTA_JERRYSCRIPT_API_MAJOR_VERSION 0
+
+/**
+ * Minor version of Arduino_Portenta_JerryScript API.
+ */
+#define ARDUINO_PORTENTA_JERRYSCRIPT_API_MINOR_VERSION 1
+
+/**
+ * Patch version of Arduino_Portenta_JerryScript API.
+ */
+#define ARDUINO_PORTENTA_JERRYSCRIPT_API_PATCH_VERSION 0
+
 /******************************************************************************
  * TYPEDEF
  ******************************************************************************/
