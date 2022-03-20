@@ -16,12 +16,20 @@ See Goals for a list of things supported and which will be supported in the futu
  - [x] Working JerryScript engine
  - [ ] Working Repl
  - [ ] Expose Arduino HW API in javascript
+    - [ ] digitalRead()
+    - [ ] digitalWrite()
+    - [ ] pinMode()
+    - [ ] analogRead()
+    - [ ] analogReference()
+    - [ ] analogWrite()
 
 ## Examples:
 
-Create a Javascript engine and execute the script `print ('Hello, World!', Math.random ());`
+<details><summary>Create a Javascript engine and execute the script `print ('Hello, World!', Math.random ());`
+</summary>
+<p>
 
-##### ArduinoCoreMbedJS.ino
+ArduinoCoreMbedJS.ino
 ```c++
 #include "Arduino.h"
 #include "mbed.h"
@@ -93,6 +101,7 @@ Mbed OS API: 6.15.1
 JerryScript API: 3.0.0
 Hello, World! 0.6900010318495333
 ```
+</p>
+</details>
 
-
-for other see `examples` folder of this repository
+#### for other see `examples` folder of this repository
