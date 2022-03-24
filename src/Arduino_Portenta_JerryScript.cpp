@@ -1,24 +1,32 @@
-/* Copyright JS Foundation and other contributors, http://js.foundation
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+/*
+  MIT License
+
+  Copyright (c) 2022 Damiano Mazzella
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
-#include "jerryscript.h"
-#include "mbed.h"
+#include "Arduino_Portenta_JerryScript.h"
 
 
 /**
@@ -108,7 +116,7 @@ jerry_port_log (const char *message_p) /**< message */
 void JERRY_ATTR_WEAK
 jerry_port_print_byte (jerry_char_t byte) /**< the character to print */
 {
-  putchar (byte);
+  fputc (byte, stderr);
 } /* jerry_port_print_byte */
 
 /**
@@ -136,35 +144,32 @@ jerry_port_print_buffer (const jerry_char_t *buffer_p, /**< string buffer */
 jerry_char_t *JERRY_ATTR_WEAK
 jerry_port_line_read (jerry_size_t *out_size_p)
 {
-  char *line_p = NULL;
-  size_t allocated = 0;
-  size_t bytes = 0;
-
   while (true)
   {
-    allocated += 64;
-    line_p = realloc (line_p, allocated);
-
-    while (bytes < allocated - 1)
+    if (Serial.available())
     {
-      char ch = (char) fgetc (stdin);
-
-      if (feof (stdin))
+      String data = "";
+      while (Serial.available())
       {
-        free (line_p);
-        return NULL;
+        data += (char)Serial.read();
       }
 
-      line_p[bytes++] = ch;
-
-      if (ch == '\n')
+      if (data != "")
       {
-        *out_size_p = (jerry_size_t) bytes;
-        line_p[bytes++] = '\0';
-        return (jerry_char_t *) line_p;
+        char *line_p = NULL;
+        if ((line_p = (char *) malloc (data.length() * sizeof(char))) != NULL)
+        {
+          *out_size_p = data.length();
+          memcpy(line_p, data.c_str(), *out_size_p);
+          return (jerry_char_t *) line_p;
+        }
       }
+
+      *out_size_p = 0;
+      return (jerry_char_t *) NULL;
     }
   }
+
 } /* jerry_port_line_read */
 
 /**
@@ -313,7 +318,7 @@ size_t JERRY_ATTR_WEAK
 jerry_port_context_alloc (size_t context_size)
 {
   size_t total_size = context_size + JERRY_GLOBAL_HEAP_SIZE * 1024;
-  current_context_p = malloc (total_size);
+  current_context_p = (jerry_context_t *) malloc (total_size);
 
   return total_size;
 } /* jerry_port_context_alloc */

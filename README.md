@@ -14,8 +14,8 @@ See Goals for a list of things supported and which will be supported in the futu
 ## Goals:
 
  - [x] Working JerryScript engine
- - [ ] Working Repl
- - [ ] Expose Arduino HW API in javascript
+ - [x] Working Repl
+ - [ ] Expose Arduino API in javascript
     - [ ] digitalRead()
     - [ ] digitalWrite()
     - [ ] pinMode()
