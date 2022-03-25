@@ -35,10 +35,6 @@
 #include "jerryscript-ext.h"
 
 
-/******************************************************************************
- * DEFINE
- ******************************************************************************/
-
 /**
  * Major version of Arduino_Portenta_JerryScript API.
  */
@@ -54,16 +50,47 @@
  */
 #define ARDUINO_PORTENTA_JERRYSCRIPT_API_PATCH_VERSION 0
 
-/******************************************************************************
- * TYPEDEF
- ******************************************************************************/
+/**
+ * Register a JavaScript property in the global object.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_register_global_property (const char *name_p, /**< name of the property */
+                                 jerry_value_t value, /**< value of the property */
+                                 bool free_value); /**< take ownership of the value */
 
-/******************************************************************************
- * CLASS DECLARATION
- ******************************************************************************/
+/**
+ * Arduino : pinMode
+ */
+jerry_value_t
+js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
+             const jerry_value_t args_p[], /**< function arguments */
+             const jerry_length_t args_cnt); /**< number of function arguments */
 
-/******************************************************************************
- * INCLUDE
- ******************************************************************************/
+/**
+ * Arduino : digitalWrite
+ */
+jerry_value_t
+js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
+                  const jerry_value_t args_p[], /**< function arguments */
+                  const jerry_length_t args_cnt); /**< number of function arguments */
+
+/**
+ * Arduino : digitalRead
+ */
+jerry_value_t
+js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
+                 const jerry_value_t args_p[], /**< function arguments */
+                 const jerry_length_t args_cnt); /**< number of function arguments */
+
+/**
+ * Arduino: Delay
+ */
+jerry_value_t
+js_delay (const jerry_call_info_t *call_info_p, /**< call information */
+          const jerry_value_t args_p[], /**< function arguments */
+          const jerry_length_t args_cnt); /**< number of function arguments */
 
 #endif /* ARDUINO_PORTENTA_JERRYSCRIPT_H_ */

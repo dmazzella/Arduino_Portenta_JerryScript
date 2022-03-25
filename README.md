@@ -16,12 +16,20 @@ See Goals for a list of things supported and which will be supported in the futu
  - [x] Working JerryScript engine
  - [x] Working Repl
  - [ ] Expose Arduino API in javascript
-    - [ ] digitalRead()
-    - [ ] digitalWrite()
-    - [ ] pinMode()
+    <details><summary>in progress</summary>
+    <p>
+
+    - [x] digitalRead()
+    - [x] digitalWrite()
+    - [x] pinMode()
+
+
     - [ ] analogRead()
     - [ ] analogReference()
     - [ ] analogWrite()
+
+    </p>
+    </details>
 
 ## Examples:
 

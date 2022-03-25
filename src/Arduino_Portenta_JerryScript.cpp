@@ -342,3 +342,164 @@ jerry_port_context_free (void)
 {
   free (current_context_p);
 } /* jerry_port_context_free */
+
+
+/**
+ * Register a JavaScript property in the global object.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_register_global_property (const char *name_p, /**< name of the property */
+                                 jerry_value_t value, /**< value of the property */
+                                 bool free_value) /**< take ownership of the value */
+{
+  jerry_value_t global_obj_val = jerry_current_realm ();
+  jerry_value_t property_name_val = jerry_string_sz (name_p);
+
+  jerry_value_t result_val = jerry_object_set (global_obj_val, property_name_val, value);
+  bool result = jerry_value_is_true (result_val);
+
+  jerry_value_free (result_val);
+  jerry_value_free (property_name_val);
+  jerry_value_free (global_obj_val);
+
+  if (free_value)
+  {
+    jerry_value_free (value);
+  }
+
+  return result;
+} /* jerryxx_register_global_property */
+
+/*******************************************************************************
+ *                                  Arduino API                                *
+ ******************************************************************************/
+
+/**
+ * Arduino : pinMode
+ */
+jerry_value_t
+js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
+             const jerry_value_t args_p[], /**< function arguments */
+             const jerry_length_t args_cnt) /**< number of function arguments */
+{
+  JERRYX_UNUSED (call_info_p);
+  if (args_cnt != 2)
+  {
+    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'pinMode' function.");
+  }
+
+  jerry_value_t pin = args_p[0];
+  if(!jerry_value_is_number (pin))
+  {
+    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
+  }
+
+  jerry_value_t mode = args_p[1];
+  if(!jerry_value_is_number (mode))
+  {
+    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'mode' must be a number.");
+  }
+
+  double pin_mode = jerry_value_as_number (mode);
+  if(pin_mode != INPUT && pin_mode != OUTPUT && pin_mode != INPUT_PULLUP && pin_mode != INPUT_PULLDOWN)
+  {
+    jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'mode' must be INPUT, OUTPUT, INPUT_PULLUP or INPUT_PULLDOWN.");
+  }
+
+  double pin_number = jerry_value_as_number (pin);
+  pinMode (pin_number, pin_mode);
+
+  return jerry_undefined ();
+} /* js_pin_mode */
+
+/**
+ * Arduino : digitalWrite
+ */
+jerry_value_t
+js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
+                  const jerry_value_t args_p[], /**< function arguments */
+                  const jerry_length_t args_cnt) /**< number of function arguments */
+{
+  JERRYX_UNUSED (call_info_p);
+  if (args_cnt != 2)
+  {
+    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
+  }
+
+  jerry_value_t pin = args_p[0];
+  if(!jerry_value_is_number (pin ))
+  {
+    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
+  }
+
+  jerry_value_t value = args_p[1];
+  if(!jerry_value_is_number (value))
+  {
+    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
+  }
+
+  double pin_value = jerry_value_as_number (value);
+  if(pin_value != HIGH && pin_value != LOW)
+  {
+    jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'value' must be HIGH or LOW.");
+  }
+
+  double pin_number = jerry_value_as_number (pin);
+  digitalWrite (pin_number, pin_value);
+
+  return jerry_undefined ();
+} /* js_digital_write */
+
+/**
+ * Arduino : digitalRead
+ */
+jerry_value_t
+js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
+                 const jerry_value_t args_p[], /**< function arguments */
+                 const jerry_length_t args_cnt) /**< number of function arguments */
+{
+  JERRYX_UNUSED (call_info_p);
+  if (args_cnt != 1)
+  {
+    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
+  }
+
+  jerry_value_t pin = args_p[0];
+  if(!jerry_value_is_number (pin ))
+  {
+    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
+  }
+
+  double pin_number = jerry_value_as_number (pin);
+  int pin_status = digitalRead (pin_number);
+
+  return jerry_number (pin_status);
+} /* js_digital_read */
+
+/**
+ * Arduino: Delay
+ */
+jerry_value_t
+js_delay (const jerry_call_info_t *call_info_p, /**< call information */
+          const jerry_value_t args_p[], /**< function arguments */
+          const jerry_length_t args_cnt) /**< number of function arguments */
+{
+  JERRYX_UNUSED (call_info_p);
+  if (args_cnt != 1)
+  {
+    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'delay' function.");
+  }
+
+  jerry_value_t value = args_p[0];
+  if(!jerry_value_is_number (value))
+  {
+    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
+  }
+
+  delay (jerry_value_as_number (value));
+
+  return jerry_undefined ();
+} /* js_delay */
