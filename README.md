@@ -15,18 +15,98 @@ See Goals for a list of things supported and which will be supported in the futu
 
  - [x] Working JerryScript engine
  - [x] Working Repl
- - [ ] Expose Arduino API in javascript
-    <details><summary>in progress</summary>
+ - [ ] Expose Arduino API in javascript (In progress)
+    <details><summary>Details</summary>
     <p>
 
-    - [x] digitalRead()
-    - [x] digitalWrite()
-    - [x] pinMode()
+    ### Constants:
 
+      - [x] HIGH | LOW
+      - [x] INPUT | OUTPUT | INPUT_PULLUP
+      - [x] LED_BUILTIN
 
-    - [ ] analogRead()
-    - [ ] analogReference()
-    - [ ] analogWrite()
+    ### Functions:
+
+      - Digital I/O:
+        - [x] pinMode
+        - [x] digitalWrite
+        - [x] digitalRead
+
+      - Time:
+        - [x] delay
+        - [x] delayMicroseconds
+        - [x] micros
+        - [x] millis
+
+      - Math:
+        - [ ] abs()
+        - [ ] constrain()
+        - [ ] map()
+        - [ ] max()
+        - [ ] min()
+        - [ ] pow()
+        - [ ] sq()
+        - [ ] sqrt()
+
+      - Trigonometry:
+        - [ ] cos()
+        - [ ] sin()
+        - [ ] tan()
+
+      - Random Numbers:
+        - [ ] random()
+        - [ ] randomSeed()
+
+      - Bits and Bytes:
+        - [ ] bit()
+        - [ ] bitClear()
+        - [ ] bitRead()
+        - [ ] bitSet()
+        - [ ] bitWrite()
+        - [ ] highByte()
+        - [ ] lowByte()
+
+      - Analog I/O:
+        - [ ] analogRead()
+        - [ ] analogReference()
+        - [ ] analogWrite()
+        - [ ] analogReadResolution()
+        - [ ] analogWriteResolution()
+
+      - Advanced I/O:
+        - [ ] noTone()
+        - [ ] pulseIn()
+        - [ ] pulseInLong()
+        - [ ] shiftIn()
+        - [ ] shiftOut()
+        - [ ] tone()
+
+      - External Interrupts:
+        - [ ] attachInterrupt()
+        - [ ] detachInterrupt()
+
+      - Interrupts:
+        - [ ] interrupts()
+        - [ ] noInterrupts()
+
+      - Characters:
+        - [ ] isAlpha()
+        - [ ] isAlphaNumeric()
+        - [ ] isAscii()
+        - [ ] isControl()
+        - [ ] isDigit()
+        - [ ] isGraph()
+        - [ ] isHexadecimalDigit()
+        - [ ] isLowerCase()
+        - [ ] isPrintable()
+        - [ ] isPunct()
+        - [ ] isSpace()
+        - [ ] isUpperCase()
+        - [ ] isWhitespace()
+
+      - Communication:
+        - [ ] Serial
+        - [ ] Stream
 
     </p>
     </details>

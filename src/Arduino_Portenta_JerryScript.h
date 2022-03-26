@@ -50,6 +50,19 @@
  */
 #define ARDUINO_PORTENTA_JERRYSCRIPT_API_PATCH_VERSION 0
 
+/*******************************************************************************
+ *                                  Arduino API                                *
+ ******************************************************************************/
+
+#define JERRYXX_BOOL_CHK(f)       \
+    do                            \
+    {                             \
+        if( !( ret = (f) ) )      \
+        {                         \
+          goto cleanup;           \
+        }                         \
+    } while( 0 )
+
 /**
  * Register a JavaScript property in the global object.
  *
@@ -58,11 +71,21 @@
  */
 bool
 jerryxx_register_global_property (const char *name_p, /**< name of the property */
-                                 jerry_value_t value, /**< value of the property */
-                                 bool free_value); /**< take ownership of the value */
+                                  jerry_value_t value, /**< value of the property */
+                                  bool free_value); /**< take ownership of the value */
+
 
 /**
- * Arduino : pinMode
+ * Register Arduino API into JavaScript global object.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_register_arduino_api(void);
+
+/**
+ * Arduino: pinMode
  */
 jerry_value_t
 js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
@@ -70,7 +93,7 @@ js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
              const jerry_length_t args_cnt); /**< number of function arguments */
 
 /**
- * Arduino : digitalWrite
+ * Arduino: digitalWrite
  */
 jerry_value_t
 js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
@@ -78,7 +101,7 @@ js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
                   const jerry_length_t args_cnt); /**< number of function arguments */
 
 /**
- * Arduino : digitalRead
+ * Arduino: digitalRead
  */
 jerry_value_t
 js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
@@ -86,11 +109,35 @@ js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
                  const jerry_length_t args_cnt); /**< number of function arguments */
 
 /**
- * Arduino: Delay
+ * Arduino: delay
  */
 jerry_value_t
 js_delay (const jerry_call_info_t *call_info_p, /**< call information */
           const jerry_value_t args_p[], /**< function arguments */
           const jerry_length_t args_cnt); /**< number of function arguments */
+
+/**
+ * Arduino: delayMicroseconds
+ */
+jerry_value_t
+js_delay_microseconds (const jerry_call_info_t *call_info_p, /**< call information */
+                       const jerry_value_t args_p[], /**< function arguments */
+                       const jerry_length_t args_cnt); /**< number of function arguments */
+
+/**
+ * Arduino: micros
+ */
+jerry_value_t
+js_micros (const jerry_call_info_t *call_info_p, /**< call information */
+           const jerry_value_t args_p[], /**< function arguments */
+           const jerry_length_t args_cnt); /**< number of function arguments */
+
+/**
+ * Arduino: millis
+ */
+jerry_value_t
+js_millis (const jerry_call_info_t *call_info_p, /**< call information */
+           const jerry_value_t args_p[], /**< function arguments */
+           const jerry_length_t args_cnt); /**< number of function arguments */
 
 #endif /* ARDUINO_PORTENTA_JERRYSCRIPT_H_ */

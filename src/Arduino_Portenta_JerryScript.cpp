@@ -343,6 +343,9 @@ jerry_port_context_free (void)
   free (current_context_p);
 } /* jerry_port_context_free */
 
+/*******************************************************************************
+ *                                  Arduino API                                *
+ ******************************************************************************/
 
 /**
  * Register a JavaScript property in the global object.
@@ -352,8 +355,8 @@ jerry_port_context_free (void)
  */
 bool
 jerryxx_register_global_property (const char *name_p, /**< name of the property */
-                                 jerry_value_t value, /**< value of the property */
-                                 bool free_value) /**< take ownership of the value */
+                                  jerry_value_t value, /**< value of the property */
+                                  bool free_value) /**< take ownership of the value */
 {
   jerry_value_t global_obj_val = jerry_current_realm ();
   jerry_value_t property_name_val = jerry_string_sz (name_p);
@@ -373,12 +376,65 @@ jerryxx_register_global_property (const char *name_p, /**< name of the property 
   return result;
 } /* jerryxx_register_global_property */
 
-/*******************************************************************************
- *                                  Arduino API                                *
- ******************************************************************************/
+/**
+ * Register Arduino API into JavaScript global object.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_register_arduino_api(void)
+{
+  bool ret = false;
+
+  /* Register the HIGH in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("HIGH", jerry_number (HIGH), true));
+
+  /* Register the LOW in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("LOW", jerry_number (LOW), true));
+
+  /* Register the INPUT in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT", jerry_number (INPUT), true));
+
+  /* Register the OUTPUT in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("OUTPUT", jerry_number (OUTPUT), true));
+
+  /* Register the INPUT_PULLUP in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT_PULLUP", jerry_number (INPUT_PULLUP), true));
+
+  /* Register the INPUT_PULLDOWN in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT_PULLDOWN", jerry_number (INPUT_PULLDOWN), true));
+
+  /* Register the LED_BUILTIN in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("LED_BUILTIN", jerry_number (LED_BUILTIN), true));
+
+  /* Register the pinMode function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("pinMode", js_pin_mode));
+
+  /* Register the digitalWrite function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("digitalWrite", js_digital_write));
+
+  /* Register the digitalRead function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("digitalRead", js_digital_read));
+  
+  /* Register the delay function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("delay", js_delay));
+
+  /* Register the delayMicroseconds function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("delayMicroseconds", js_delay_microseconds));
+
+  /* Register the micros function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("micros", js_micros));
+
+  /* Register the millis function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("millis", js_millis));
+
+cleanup:
+  return ret;
+} /* jerryxx_register_arduino_api */
 
 /**
- * Arduino : pinMode
+ * Arduino: pinMode
  */
 jerry_value_t
 js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
@@ -388,13 +444,13 @@ js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
   JERRYX_UNUSED (call_info_p);
   if (args_cnt != 2)
   {
-    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'pinMode' function.");
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'pinMode' function.");
   }
 
   jerry_value_t pin = args_p[0];
   if(!jerry_value_is_number (pin))
   {
-    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
+    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
   }
 
   jerry_value_t mode = args_p[1];
@@ -406,7 +462,7 @@ js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
   double pin_mode = jerry_value_as_number (mode);
   if(pin_mode != INPUT && pin_mode != OUTPUT && pin_mode != INPUT_PULLUP && pin_mode != INPUT_PULLDOWN)
   {
-    jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'mode' must be INPUT, OUTPUT, INPUT_PULLUP or INPUT_PULLDOWN.");
+    return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'mode' must be INPUT, OUTPUT, INPUT_PULLUP or INPUT_PULLDOWN.");
   }
 
   double pin_number = jerry_value_as_number (pin);
@@ -416,7 +472,7 @@ js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
 } /* js_pin_mode */
 
 /**
- * Arduino : digitalWrite
+ * Arduino: digitalWrite
  */
 jerry_value_t
 js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
@@ -426,25 +482,25 @@ js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
   JERRYX_UNUSED (call_info_p);
   if (args_cnt != 2)
   {
-    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
   }
 
   jerry_value_t pin = args_p[0];
   if(!jerry_value_is_number (pin ))
   {
-    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
+    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
   }
 
   jerry_value_t value = args_p[1];
   if(!jerry_value_is_number (value))
   {
-    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
+    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
   }
 
   double pin_value = jerry_value_as_number (value);
   if(pin_value != HIGH && pin_value != LOW)
   {
-    jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'value' must be HIGH or LOW.");
+    return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'value' must be HIGH or LOW.");
   }
 
   double pin_number = jerry_value_as_number (pin);
@@ -454,7 +510,7 @@ js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
 } /* js_digital_write */
 
 /**
- * Arduino : digitalRead
+ * Arduino: digitalRead
  */
 jerry_value_t
 js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
@@ -464,13 +520,13 @@ js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
   JERRYX_UNUSED (call_info_p);
   if (args_cnt != 1)
   {
-    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
   }
 
   jerry_value_t pin = args_p[0];
   if(!jerry_value_is_number (pin ))
   {
-    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
+    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
   }
 
   double pin_number = jerry_value_as_number (pin);
@@ -480,7 +536,7 @@ js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
 } /* js_digital_read */
 
 /**
- * Arduino: Delay
+ * Arduino: delay
  */
 jerry_value_t
 js_delay (const jerry_call_info_t *call_info_p, /**< call information */
@@ -490,16 +546,75 @@ js_delay (const jerry_call_info_t *call_info_p, /**< call information */
   JERRYX_UNUSED (call_info_p);
   if (args_cnt != 1)
   {
-    jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'delay' function.");
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'delay' function.");
   }
 
   jerry_value_t value = args_p[0];
   if(!jerry_value_is_number (value))
   {
-    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
+    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
   }
 
   delay (jerry_value_as_number (value));
 
   return jerry_undefined ();
 } /* js_delay */
+
+/**
+ * Arduino: delayMicroseconds
+ */
+jerry_value_t
+js_delay_microseconds (const jerry_call_info_t *call_info_p, /**< call information */
+                       const jerry_value_t args_p[], /**< function arguments */
+                       const jerry_length_t args_cnt) /**< number of function arguments */
+{
+  JERRYX_UNUSED (call_info_p);
+  if (args_cnt != 1)
+  {
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'delayMicroseconds' function.");
+  }
+
+  jerry_value_t value = args_p[0];
+  if(!jerry_value_is_number (value))
+  {
+    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
+  }
+
+  delayMicroseconds (jerry_value_as_number (value));
+
+  return jerry_undefined ();
+} /* js_delay_microseconds */
+
+/**
+ * Arduino: micros
+ */
+jerry_value_t
+js_micros (const jerry_call_info_t *call_info_p, /**< call information */
+           const jerry_value_t args_p[], /**< function arguments */
+           const jerry_length_t args_cnt) /**< number of function arguments */
+{
+  JERRYX_UNUSED (call_info_p);
+  if (args_cnt != 0)
+  {
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'micros' function.");
+  }
+
+  return jerry_number (micros ());
+} /* js_micros */
+
+/**
+ * Arduino: millis
+ */
+jerry_value_t
+js_millis (const jerry_call_info_t *call_info_p, /**< call information */
+           const jerry_value_t args_p[], /**< function arguments */
+           const jerry_length_t args_cnt) /**< number of function arguments */
+{
+  JERRYX_UNUSED (call_info_p);
+  if (args_cnt != 0)
+  {
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'millis' function.");
+  }
+
+  return jerry_number (millis ());
+} /* js_millis */

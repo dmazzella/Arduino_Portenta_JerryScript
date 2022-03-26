@@ -62,6 +62,9 @@ void loop() {
     /* Register the print function in the global object */
     jerryx_register_global("print", jerryx_handler_print);
 
+    /* Register the Arduino API in the global object */
+    jerryxx_register_arduino_api ();
+
     jerry_size_t source_size;
     jerry_char_t *source_p = NULL;
     if ((source_p = jerry_port_source_read("/js/index.js", &source_size)) != NULL) {

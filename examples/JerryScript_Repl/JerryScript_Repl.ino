@@ -25,6 +25,9 @@ void setup() {
   /* Register the print function in the global object */
   jerryx_register_global ("print", jerryx_handler_print);
 
+  /* Register the Arduino API in the global object */
+  jerryxx_register_arduino_api ();
+
   jerryx_repl("js> ");
 
   /* Cleanup engine */
