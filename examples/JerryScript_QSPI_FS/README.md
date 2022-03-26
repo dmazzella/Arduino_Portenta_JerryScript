@@ -39,6 +39,8 @@ export function getFeatureDetails() {
 
 ```
 
+### All files used in this example are available also into the forder `QSPI_FS` 
+
 ## Output
 ```
 Mbed OS API: 6.15.1
