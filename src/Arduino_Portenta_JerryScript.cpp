@@ -387,47 +387,57 @@ jerryxx_register_arduino_api(void)
 {
   bool ret = false;
 
-  /* Register the HIGH in the global object */
+  /* Register Constants in the global object */
+
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("HIGH", jerry_number (HIGH), true));
-
-  /* Register the LOW in the global object */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LOW", jerry_number (LOW), true));
-
-  /* Register the INPUT in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("CHANGE", jerry_number (CHANGE), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("RISING", jerry_number (RISING), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("FALLING", jerry_number (FALLING), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT", jerry_number (INPUT), true));
-
-  /* Register the OUTPUT in the global object */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("OUTPUT", jerry_number (OUTPUT), true));
-
-  /* Register the INPUT_PULLUP in the global object */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT_PULLUP", jerry_number (INPUT_PULLUP), true));
-
-  /* Register the INPUT_PULLDOWN in the global object */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT_PULLDOWN", jerry_number (INPUT_PULLDOWN), true));
-
-  /* Register the LED_BUILTIN in the global object */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("PIN_LED", jerry_number (PIN_LED), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LED_BUILTIN", jerry_number (LED_BUILTIN), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("LEDR", jerry_number (LEDR), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("LEDG", jerry_number (LEDG), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("LEDB", jerry_number (LEDB), true));
 
-  /* Register the pinMode function in the global object */
+  /* Register Functions in the global object */
+
+  /* Digital I/O */
   JERRYXX_BOOL_CHK(jerryx_register_global ("pinMode", js_pin_mode));
-
-  /* Register the digitalWrite function in the global object */
   JERRYXX_BOOL_CHK(jerryx_register_global ("digitalWrite", js_digital_write));
-
-  /* Register the digitalRead function in the global object */
   JERRYXX_BOOL_CHK(jerryx_register_global ("digitalRead", js_digital_read));
-  
-  /* Register the delay function in the global object */
+  /* Time */
   JERRYXX_BOOL_CHK(jerryx_register_global ("delay", js_delay));
-
-  /* Register the delayMicroseconds function in the global object */
   JERRYXX_BOOL_CHK(jerryx_register_global ("delayMicroseconds", js_delay_microseconds));
-
-  /* Register the micros function in the global object */
   JERRYXX_BOOL_CHK(jerryx_register_global ("micros", js_micros));
-
-  /* Register the millis function in the global object */
   JERRYXX_BOOL_CHK(jerryx_register_global ("millis", js_millis));
+  /* Math */
+  /* Trigonometry */
+  /* Random Numbers */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("randomSeed", js_random_seed));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("random", js_random));
+  /* Bits and Bytes */
+  /* Analog I/O */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("analogRead", js_analog_read));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("analogWrite", js_analog_write));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("analogReadResolution", js_analog_read_resolution));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("analogWriteResolution", js_analog_write_resolution));
+  /* Advanced I/O */
+  /* External Interrupts */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("attachInterrupt", js_attach_interrupt));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("detachInterrupt", js_detach_interrupt));
+  /* Interrupts */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("interrupts", js_interrupts));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("noInterrupts", js_no_interrupts));
+  /* Characters */
+
+  /* Register Objects in the global object */
+
+  /* Communication */
 
 cleanup:
   return ret;
@@ -436,28 +446,16 @@ cleanup:
 /**
  * Arduino: pinMode
  */
-jerry_value_t
-js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
-             const jerry_value_t args_p[], /**< function arguments */
-             const jerry_length_t args_cnt) /**< number of function arguments */
+JERRYXX_DECLARE_FUNCTION(pin_mode)
 {
   JERRYX_UNUSED (call_info_p);
-  if (args_cnt != 2)
-  {
-    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'pinMode' function.");
-  }
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 2, "Wrong arguments count in 'pinMode' function.");
 
   jerry_value_t pin = args_p[0];
-  if(!jerry_value_is_number (pin))
-  {
-    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
-  }
-
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+  
   jerry_value_t mode = args_p[1];
-  if(!jerry_value_is_number (mode))
-  {
-    jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'mode' must be a number.");
-  }
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (mode), "Wrong argument 'mode' must be a number.");
 
   double pin_mode = jerry_value_as_number (mode);
   if(pin_mode != INPUT && pin_mode != OUTPUT && pin_mode != INPUT_PULLUP && pin_mode != INPUT_PULLDOWN)
@@ -465,8 +463,7 @@ js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
     return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'mode' must be INPUT, OUTPUT, INPUT_PULLUP or INPUT_PULLDOWN.");
   }
 
-  double pin_number = jerry_value_as_number (pin);
-  pinMode (pin_number, pin_mode);
+  pinMode (jerry_value_as_number (pin), pin_mode);
 
   return jerry_undefined ();
 } /* js_pin_mode */
@@ -474,37 +471,24 @@ js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
 /**
  * Arduino: digitalWrite
  */
-jerry_value_t
-js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
-                  const jerry_value_t args_p[], /**< function arguments */
-                  const jerry_length_t args_cnt) /**< number of function arguments */
+JERRYXX_DECLARE_FUNCTION(digital_write)
 {
   JERRYX_UNUSED (call_info_p);
-  if (args_cnt != 2)
-  {
-    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
-  }
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 2, "Wrong arguments count in 'digitalWrite' function.");
 
   jerry_value_t pin = args_p[0];
-  if(!jerry_value_is_number (pin ))
-  {
-    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
-  }
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE((!jerry_value_is_number (pin)), "Wrong argument 'pin' must be a number.");
 
   jerry_value_t value = args_p[1];
-  if(!jerry_value_is_number (value))
-  {
-    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
-  }
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE((!jerry_value_is_number (value) && !jerry_value_is_boolean (value)), "Wrong argument 'value' must be a number or boolean.");
 
-  double pin_value = jerry_value_as_number (value);
+  double pin_value = (jerry_value_is_boolean (value) ? (jerry_value_is_true (value) ? HIGH : LOW) : jerry_value_as_number (value));
   if(pin_value != HIGH && pin_value != LOW)
   {
     return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'value' must be HIGH or LOW.");
   }
 
-  double pin_number = jerry_value_as_number (pin);
-  digitalWrite (pin_number, pin_value);
+  digitalWrite (jerry_value_as_number (pin), pin_value);
 
   return jerry_undefined ();
 } /* js_digital_write */
@@ -512,48 +496,27 @@ js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
 /**
  * Arduino: digitalRead
  */
-jerry_value_t
-js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
-                 const jerry_value_t args_p[], /**< function arguments */
-                 const jerry_length_t args_cnt) /**< number of function arguments */
+JERRYXX_DECLARE_FUNCTION(digital_read)
 {
   JERRYX_UNUSED (call_info_p);
-  if (args_cnt != 1)
-  {
-    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'digitalWrite' function.");
-  }
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'digitalRead' function.");
 
   jerry_value_t pin = args_p[0];
-  if(!jerry_value_is_number (pin ))
-  {
-    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'pin' must be a number.");
-  }
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
 
-  double pin_number = jerry_value_as_number (pin);
-  int pin_status = digitalRead (pin_number);
-
-  return jerry_number (pin_status);
+  return jerry_number (digitalRead (jerry_value_as_number (pin)));
 } /* js_digital_read */
 
 /**
  * Arduino: delay
  */
-jerry_value_t
-js_delay (const jerry_call_info_t *call_info_p, /**< call information */
-          const jerry_value_t args_p[], /**< function arguments */
-          const jerry_length_t args_cnt) /**< number of function arguments */
+JERRYXX_DECLARE_FUNCTION(delay)
 {
   JERRYX_UNUSED (call_info_p);
-  if (args_cnt != 1)
-  {
-    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'delay' function.");
-  }
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'delay' function.");
 
   jerry_value_t value = args_p[0];
-  if(!jerry_value_is_number (value))
-  {
-    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
-  }
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (value), "Wrong argument 'value' must be a number.");
 
   delay (jerry_value_as_number (value));
 
@@ -563,22 +526,13 @@ js_delay (const jerry_call_info_t *call_info_p, /**< call information */
 /**
  * Arduino: delayMicroseconds
  */
-jerry_value_t
-js_delay_microseconds (const jerry_call_info_t *call_info_p, /**< call information */
-                       const jerry_value_t args_p[], /**< function arguments */
-                       const jerry_length_t args_cnt) /**< number of function arguments */
+JERRYXX_DECLARE_FUNCTION(delay_microseconds)
 {
   JERRYX_UNUSED (call_info_p);
-  if (args_cnt != 1)
-  {
-    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'delayMicroseconds' function.");
-  }
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'delayMicroseconds' function.");
 
   jerry_value_t value = args_p[0];
-  if(!jerry_value_is_number (value))
-  {
-    return jerry_throw_sz (JERRY_ERROR_TYPE, "Wrong argument 'value' must be a number.");
-  }
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (value), "Wrong argument 'value' must be a number.");
 
   delayMicroseconds (jerry_value_as_number (value));
 
@@ -588,16 +542,10 @@ js_delay_microseconds (const jerry_call_info_t *call_info_p, /**< call informati
 /**
  * Arduino: micros
  */
-jerry_value_t
-js_micros (const jerry_call_info_t *call_info_p, /**< call information */
-           const jerry_value_t args_p[], /**< function arguments */
-           const jerry_length_t args_cnt) /**< number of function arguments */
+JERRYXX_DECLARE_FUNCTION(micros)
 {
   JERRYX_UNUSED (call_info_p);
-  if (args_cnt != 0)
-  {
-    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'micros' function.");
-  }
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'micros' function.");
 
   return jerry_number (micros ());
 } /* js_micros */
@@ -605,16 +553,187 @@ js_micros (const jerry_call_info_t *call_info_p, /**< call information */
 /**
  * Arduino: millis
  */
-jerry_value_t
-js_millis (const jerry_call_info_t *call_info_p, /**< call information */
-           const jerry_value_t args_p[], /**< function arguments */
-           const jerry_length_t args_cnt) /**< number of function arguments */
+JERRYXX_DECLARE_FUNCTION(millis)
 {
   JERRYX_UNUSED (call_info_p);
-  if (args_cnt != 0)
-  {
-    return jerry_throw_sz (JERRY_ERROR_SYNTAX, "Wrong arguments count in 'millis' function.");
-  }
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'millis' function.");
 
   return jerry_number (millis ());
 } /* js_millis */
+
+/**
+ * Arduino: randomSeed
+ */
+JERRYXX_DECLARE_FUNCTION(random_seed)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'randomSeed' function.");
+
+  jerry_value_t seed = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (seed), "Wrong argument 'seed' must be a number.");
+
+  randomSeed (jerry_value_as_number (seed));
+
+  return jerry_undefined();
+} /* js_random_seed */
+
+/**
+ * Arduino: random
+ */
+JERRYXX_DECLARE_FUNCTION(random)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX((args_cnt != 1 && args_cnt != 2), "Wrong arguments count in 'random' function.");
+
+  if (args_cnt == 1)
+  {
+      jerry_value_t r_max = args_p[0];
+      JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (r_max), "Wrong argument 'max' must be a number.");
+      return jerry_number (random (jerry_value_as_number (r_max)));
+  }
+  else if (args_cnt == 2)
+  {
+      jerry_value_t r_min = args_p[0];
+      jerry_value_t r_max = args_p[1];
+      JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (r_min), "Wrong argument 'min' must be a number.");
+      JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (r_max), "Wrong argument 'max' must be a number.");
+      return jerry_number (random (jerry_value_as_number (r_min), jerry_value_as_number (r_max)));
+  }
+
+  return jerry_number (0);
+} /* js_random */
+
+/**
+ * Arduino: analogRead
+ */
+JERRYXX_DECLARE_FUNCTION(analog_read)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'analogRead' function.");
+
+  jerry_value_t pin = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+
+  return jerry_number (analogRead (jerry_value_as_number (pin)));
+} /* js_analog_read */
+
+/**
+ * Arduino: analogWrite
+ */
+JERRYXX_DECLARE_FUNCTION(analog_write)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 2, "Wrong arguments count in 'analogWrite' function.");
+
+  jerry_value_t pin = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+
+  jerry_value_t value = args_p[1];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (value), "Wrong argument 'value' must be a number.");
+
+  analogWrite (jerry_value_as_number (pin), jerry_value_as_number (value));
+
+  return jerry_undefined ();
+} /* js_analog_write */
+
+/**
+ * Arduino: analogReadResolution
+ */
+JERRYXX_DECLARE_FUNCTION(analog_read_resolution)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'analogReadResolution' function.");
+
+  jerry_value_t bits = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (bits), "Wrong argument 'bits' must be a number.");
+
+  analogReadResolution (jerry_value_as_number (bits));
+
+  return jerry_undefined ();
+} /* js_analog_read_resolution */
+
+/**
+ * Arduino: analogWriteResolution
+ */
+JERRYXX_DECLARE_FUNCTION(analog_write_resolution)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'analogWriteResolution' function.");
+
+  jerry_value_t bits = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (bits), "Wrong argument 'bits' must be a number.");
+
+  analogWriteResolution (jerry_value_as_number (bits));
+
+  return jerry_undefined ();
+} /* js_analog_write_resolution */
+
+/**
+ * Arduino: interrupts
+ */
+JERRYXX_DECLARE_FUNCTION(interrupts)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'interrupts' function.");
+
+  interrupts();
+
+  return jerry_undefined ();
+} /* js_interrupts */
+
+/**
+ * Arduino: noInterrupts
+ */
+JERRYXX_DECLARE_FUNCTION(no_interrupts)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'noInterrupts' function.");
+
+  noInterrupts();
+
+  return jerry_undefined ();
+} /* js_no_interrupts */
+
+/**
+ * Arduino: attachInterrupt
+ */
+JERRYXX_DECLARE_FUNCTION(attach_interrupt)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 3, "Wrong arguments count in 'attachInterrupt' function.");
+
+  jerry_value_t pin = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+
+  jerry_value_t callback_fn = args_p[1];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_function (callback_fn), "Wrong argument 'ISR' must be a function.");
+
+  jerry_value_t mode = args_p[2];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (mode), "Wrong argument 'mode' must be a number.");
+
+  auto func = [](void* callback_fn) -> void {
+    jerry_value_t global_obj_val = jerry_current_realm ();
+    jerry_value_free (jerry_call ((jerry_value_t)callback_fn, global_obj_val, NULL, 0));
+    jerry_value_free (global_obj_val);
+  };
+
+  attachInterrupt ((pin_size_t)jerry_value_as_number (pin), (voidFuncPtrParam)func, (PinStatus)jerry_value_as_number (mode), (void*) callback_fn);
+
+  return jerry_undefined ();
+} /* js_attach_interrupt */
+
+/**
+ * Arduino: detachInterrupt
+ */
+JERRYXX_DECLARE_FUNCTION(detach_interrupt)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'detachInterrupt' function.");
+
+  jerry_value_t pin = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+
+  detachInterrupt (jerry_value_as_number (pin));
+
+  return jerry_undefined ();
+} /* js_detach_interrupt */

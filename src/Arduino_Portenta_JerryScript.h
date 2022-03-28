@@ -63,6 +63,30 @@
         }                         \
     } while( 0 )
 
+#define JERRYXX_DECLARE_FUNCTION(f)                                        \
+  jerry_value_t                                                            \
+  js_##f (const jerry_call_info_t *call_info_p, /**< call information */   \
+          const jerry_value_t args_p[], /**< function arguments */         \
+          const jerry_length_t args_cnt) /**< number of function arguments */
+
+#define JERRYXX_DEFINE_FUNCTION(f)                                        \
+  jerry_value_t                                                            \
+  js_##f (const jerry_call_info_t *call_info_p, /**< call information */   \
+          const jerry_value_t args_p[], /**< function arguments */         \
+          const jerry_length_t args_cnt); /**< number of function arguments */
+
+#define JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(c, msg) \
+  if (c)                                                 \
+  {                                                      \
+    return jerry_throw_sz (JERRY_ERROR_SYNTAX, msg);     \
+  }
+
+#define JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(c, msg) \
+  if(c)                                              \
+  {                                                       \
+    return jerry_throw_sz (JERRY_ERROR_TYPE, msg);        \
+  }
+
 /**
  * Register a JavaScript property in the global object.
  *
@@ -87,57 +111,86 @@ jerryxx_register_arduino_api(void);
 /**
  * Arduino: pinMode
  */
-jerry_value_t
-js_pin_mode (const jerry_call_info_t *call_info_p, /**< call information */
-             const jerry_value_t args_p[], /**< function arguments */
-             const jerry_length_t args_cnt); /**< number of function arguments */
+JERRYXX_DEFINE_FUNCTION(pin_mode);
 
 /**
  * Arduino: digitalWrite
  */
-jerry_value_t
-js_digital_write (const jerry_call_info_t *call_info_p, /**< call information */
-                  const jerry_value_t args_p[], /**< function arguments */
-                  const jerry_length_t args_cnt); /**< number of function arguments */
+JERRYXX_DEFINE_FUNCTION(digital_write);
 
 /**
  * Arduino: digitalRead
  */
-jerry_value_t
-js_digital_read (const jerry_call_info_t *call_info_p, /**< call information */
-                 const jerry_value_t args_p[], /**< function arguments */
-                 const jerry_length_t args_cnt); /**< number of function arguments */
+JERRYXX_DEFINE_FUNCTION(digital_read);
 
 /**
  * Arduino: delay
  */
-jerry_value_t
-js_delay (const jerry_call_info_t *call_info_p, /**< call information */
-          const jerry_value_t args_p[], /**< function arguments */
-          const jerry_length_t args_cnt); /**< number of function arguments */
+JERRYXX_DEFINE_FUNCTION(delay)
 
 /**
  * Arduino: delayMicroseconds
  */
-jerry_value_t
-js_delay_microseconds (const jerry_call_info_t *call_info_p, /**< call information */
-                       const jerry_value_t args_p[], /**< function arguments */
-                       const jerry_length_t args_cnt); /**< number of function arguments */
+JERRYXX_DEFINE_FUNCTION(delay_microseconds);
 
 /**
  * Arduino: micros
  */
-jerry_value_t
-js_micros (const jerry_call_info_t *call_info_p, /**< call information */
-           const jerry_value_t args_p[], /**< function arguments */
-           const jerry_length_t args_cnt); /**< number of function arguments */
+JERRYXX_DEFINE_FUNCTION(micros);
 
 /**
  * Arduino: millis
  */
-jerry_value_t
-js_millis (const jerry_call_info_t *call_info_p, /**< call information */
-           const jerry_value_t args_p[], /**< function arguments */
-           const jerry_length_t args_cnt); /**< number of function arguments */
+JERRYXX_DEFINE_FUNCTION(millis);
+
+/**
+ * Arduino: randomSeed
+ */
+JERRYXX_DEFINE_FUNCTION(random_seed);
+
+/**
+ * Arduino: random
+ */
+JERRYXX_DEFINE_FUNCTION(random);
+
+/**
+ * Arduino: analogRead
+ */
+JERRYXX_DEFINE_FUNCTION(analog_read);
+
+/**
+ * Arduino: analogWrite
+ */
+JERRYXX_DEFINE_FUNCTION(analog_write);
+
+/**
+ * Arduino: analogReadResolution
+ */
+JERRYXX_DEFINE_FUNCTION(analog_read_resolution);
+
+/**
+ * Arduino: analogWriteResolution
+ */
+JERRYXX_DEFINE_FUNCTION(analog_write_resolution);
+
+/**
+ * Arduino: interrupts
+ */
+JERRYXX_DEFINE_FUNCTION(interrupts);
+
+/**
+ * Arduino: noInterrupts
+ */
+JERRYXX_DEFINE_FUNCTION(no_interrupts);
+
+/**
+ * Arduino: attachInterrupt
+ */
+JERRYXX_DEFINE_FUNCTION(attach_interrupt);
+
+/**
+ * Arduino: detachInterrupt
+ */
+JERRYXX_DEFINE_FUNCTION(detach_interrupt);
 
 #endif /* ARDUINO_PORTENTA_JERRYSCRIPT_H_ */

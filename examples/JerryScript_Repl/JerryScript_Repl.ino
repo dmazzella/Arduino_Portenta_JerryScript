@@ -28,6 +28,7 @@ void setup() {
   /* Register the Arduino API in the global object */
   jerryxx_register_arduino_api ();
 
+  /* Read Evaluate Print Loop */
   jerryx_repl("js> ");
 
   /* Cleanup engine */

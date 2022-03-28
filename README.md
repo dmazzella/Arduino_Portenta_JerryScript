@@ -21,9 +21,9 @@ See Goals for a list of things supported and which will be supported in the futu
 
     ### Constants:
 
-      - [x] HIGH | LOW
+      - [x] HIGH | LOW | CHANGE | RISING | FALLING
       - [x] INPUT | OUTPUT | INPUT_PULLUP
-      - [x] LED_BUILTIN
+      - [x] PIN_LED | LED_BUILTIN | LEDR | LEDG | LEDB
 
     ### Functions:
 
@@ -54,8 +54,8 @@ See Goals for a list of things supported and which will be supported in the futu
         - [ ] tan()
 
       - Random Numbers:
-        - [ ] random()
-        - [ ] randomSeed()
+        - [x] random()
+        - [x] randomSeed()
 
       - Bits and Bytes:
         - [ ] bit()
@@ -67,11 +67,10 @@ See Goals for a list of things supported and which will be supported in the futu
         - [ ] lowByte()
 
       - Analog I/O:
-        - [ ] analogRead()
-        - [ ] analogReference()
-        - [ ] analogWrite()
-        - [ ] analogReadResolution()
-        - [ ] analogWriteResolution()
+        - [x] analogRead()
+        - [x] analogWrite()
+        - [x] analogReadResolution()
+        - [x] analogWriteResolution()
 
       - Advanced I/O:
         - [ ] noTone()
@@ -82,12 +81,12 @@ See Goals for a list of things supported and which will be supported in the futu
         - [ ] tone()
 
       - External Interrupts:
-        - [ ] attachInterrupt()
-        - [ ] detachInterrupt()
+        - [x] attachInterrupt()
+        - [x] detachInterrupt()
 
       - Interrupts:
-        - [ ] interrupts()
-        - [ ] noInterrupts()
+        - [x] interrupts()
+        - [x] noInterrupts()
 
       - Characters:
         - [ ] isAlpha()
