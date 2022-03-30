@@ -22,8 +22,8 @@ void setup() {
   /* Set log level */
   jerry_log_set_level (JERRY_LOG_LEVEL_DEBUG);
 
-  /* Register the print function in the global object */
-  jerryx_register_global ("print", jerryx_handler_print);
+  /* Register the extra API (print, setTimeout ...) in the global object */
+  jerryxx_register_extra_api ();
 
   /* Register the Arduino API in the global object */
   jerryxx_register_arduino_api ();

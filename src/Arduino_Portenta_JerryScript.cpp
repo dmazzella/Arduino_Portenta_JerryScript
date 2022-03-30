@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <unordered_map>
 
 #include "Arduino_Portenta_JerryScript.h"
 
@@ -344,8 +345,48 @@ jerry_port_context_free (void)
 } /* jerry_port_context_free */
 
 /*******************************************************************************
- *                                  Arduino API                                *
+ *                                   Extra API                                 *
  ******************************************************************************/
+
+static std::unordered_map<int, rtos::Thread*> jerryxx_scheduler_threads_map;
+static rtos::Mutex jerryxx_scheduler_threads_mutex;
+
+/**
+ * Run JavaScript scheduler (user for switch setTimeout and setInterval threads).
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_scheduler_yield(void)
+{
+  yield();
+} /* jerryxx_scheduler_yield */
+
+/**
+ * Cleanup scheduler thread in state Deleted.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_cleanup_scheduler_map(void)
+{
+  std::unordered_map<int, rtos::Thread*>::const_iterator it;
+  for (it = jerryxx_scheduler_threads_map.begin(); it != jerryxx_scheduler_threads_map.end(); it++)
+  {
+    int thid = it->first;
+    rtos::Thread* thread = it->second;
+
+    if (thread->get_state() == rtos::Thread::Deleted)
+    {
+      thread->terminate();
+      jerryxx_scheduler_threads_mutex.lock();
+      jerryxx_scheduler_threads_map.erase(thid);
+      jerryxx_scheduler_threads_mutex.unlock();
+    }
+  }
+} /* jerryxx_cleanup_scheduler_map */
 
 /**
  * Register a JavaScript property in the global object.
@@ -377,6 +418,190 @@ jerryxx_register_global_property (const char *name_p, /**< name of the property 
 } /* jerryxx_register_global_property */
 
 /**
+ * Register Extra API into JavaScript global object.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_register_extra_api(void)
+{
+  bool ret = false;
+
+  /* Register the print function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("print", jerryx_handler_print));
+
+  /* Register the setTimeout function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("setTimeout", js_set_timeout));
+
+  /* Register the clearTimeout function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("clearTimeout", js_clear_timeout));
+
+  /* Register the setInterval function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("setInterval", js_set_interval));
+
+  /* Register the clearInterval function in the global object */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("clearInterval", js_clear_interval));
+
+cleanup:
+  return ret;
+} /* jerryxx_register_extra_api */
+
+/**
+ * Javascript: setTimeout
+ */
+JERRYXX_DECLARE_FUNCTION(set_timeout)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX((args_cnt != 1 && args_cnt != 2), "Wrong arguments count in 'setTimeout' function.");
+
+  jerry_value_t callback_fn = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_function (callback_fn), "Wrong argument 'callback' must be a function.");
+
+  jerry_value_t delay_time = (args_cnt == 2 ? args_p[1] : jerry_number (0));
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (delay_time), "Wrong argument 'delay' must be a number.");
+
+  jerryxx_cleanup_scheduler_map();
+
+  if (jerryxx_scheduler_threads_map.size() < JERRYXX_MAX_THREADS_NUMBER)
+  {
+    rtos::Thread * thread = new rtos::Thread;
+    thread->start([callback_fn, delay_time](void) -> void {
+      jerry_value_t callback_fn_copy = jerry_value_copy (callback_fn);
+      jerry_value_t delay_time_copy = jerry_value_copy (delay_time);
+
+      rtos::ThisThread::sleep_for(abs (jerry_value_as_number (delay_time_copy)));
+
+      jerry_value_t global_obj_val = jerry_current_realm ();
+      jerry_value_t result_val = jerry_call (callback_fn_copy, global_obj_val, NULL, 0);
+      jerry_value_free (result_val);
+      jerry_value_free (global_obj_val);
+      jerry_value_free (callback_fn_copy);
+      jerry_value_free (delay_time_copy);
+    });
+    int idx = (int)thread->get_id();
+
+    jerryxx_scheduler_threads_mutex.lock();
+    jerryxx_scheduler_threads_map.insert(std::make_pair(idx, thread));
+    jerryxx_scheduler_threads_mutex.unlock();
+
+    return jerry_number (idx);
+  }
+
+  return jerry_throw_sz (JERRY_ERROR_RANGE, "No scheduler slot free found.");
+} /* js_set_timeout */
+
+/**
+ * Javascript: clearTimeout
+ */
+JERRYXX_DECLARE_FUNCTION(clear_timeout)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'clearTimeout' function.");
+
+  jerry_value_t timeout_id = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (timeout_id), "Wrong argument 'timeoutId' must be a number.");
+
+  int tid = jerry_value_as_number (timeout_id);
+  
+  std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (tid);
+  if ( got != jerryxx_scheduler_threads_map.end() )
+  {
+    int idx = got->first;
+    rtos::Thread* thread = got->second;
+    thread->terminate();
+
+    jerryxx_scheduler_threads_mutex.lock();
+    jerryxx_scheduler_threads_map.erase(idx);
+    jerryxx_scheduler_threads_mutex.unlock();
+  }
+
+  jerryxx_cleanup_scheduler_map();
+
+  return jerry_undefined ();
+} /* js_clear_timeout */
+
+/**
+ * Javascript: setInterval
+ */
+JERRYXX_DECLARE_FUNCTION(set_interval)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX((args_cnt != 1 && args_cnt != 2), "Wrong arguments count in 'setInterval' function.");
+
+  jerry_value_t callback_fn = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_function (callback_fn), "Wrong argument 'callback' must be a function.");
+
+  jerry_value_t delay_time = (args_cnt == 2 ? args_p[1] : jerry_number (0));
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (delay_time), "Wrong argument 'delay' must be a number.");
+
+  jerryxx_cleanup_scheduler_map();
+
+  if (jerryxx_scheduler_threads_map.size() < JERRYXX_MAX_THREADS_NUMBER)
+  {
+    rtos::Thread * thread = new rtos::Thread;
+    thread->start([callback_fn, delay_time](void) -> void {
+      while(true)
+      {
+        jerry_value_t callback_fn_copy = jerry_value_copy (callback_fn);
+        jerry_value_t delay_time_copy = jerry_value_copy (delay_time);
+
+        rtos::ThisThread::sleep_for(abs (jerry_value_as_number (delay_time_copy)));
+
+        jerry_value_t global_obj_val = jerry_current_realm ();
+        jerry_value_t result_val = jerry_call (callback_fn_copy, global_obj_val, NULL, 0);
+        jerry_value_free (result_val);
+        jerry_value_free (global_obj_val);
+        jerry_value_free (callback_fn_copy);
+        jerry_value_free (delay_time_copy);
+      }
+    });
+    int idx = (int)thread->get_id();
+
+    jerryxx_scheduler_threads_mutex.lock();
+    jerryxx_scheduler_threads_map.insert(std::make_pair(idx, thread));
+    jerryxx_scheduler_threads_mutex.unlock();
+
+    return jerry_number (idx);
+  }
+
+  return jerry_throw_sz (JERRY_ERROR_RANGE, "No scheduler slot free found.");
+} /* js_set_interval */
+
+/**
+ * Javascript: clearInterval
+ */
+JERRYXX_DECLARE_FUNCTION(clear_interval)
+{
+  JERRYX_UNUSED (call_info_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'clearInterval' function.");
+
+  jerry_value_t interval_id = args_p[0];
+  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (interval_id), "Wrong argument 'intervalId' must be a number.");
+
+  int iid = jerry_value_as_number (interval_id);
+  std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (iid);
+  if ( got != jerryxx_scheduler_threads_map.end() )
+  {
+    int idx = got->first;
+    rtos::Thread* thread = got->second;
+    thread->terminate();
+
+    jerryxx_scheduler_threads_mutex.lock();
+    jerryxx_scheduler_threads_map.erase(idx);
+    jerryxx_scheduler_threads_mutex.unlock();
+  }
+
+  jerryxx_cleanup_scheduler_map();
+
+  return jerry_undefined ();
+} /* js_clear_interval */
+
+/*******************************************************************************
+ *                                  Arduino API                                *
+ ******************************************************************************/
+
+/**
  * Register Arduino API into JavaScript global object.
  *
  * @return true - if the operation was successful,
@@ -389,20 +614,63 @@ jerryxx_register_arduino_api(void)
 
   /* Register Constants in the global object */
 
+  /* PINs Status */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("HIGH", jerry_number (HIGH), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LOW", jerry_number (LOW), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("CHANGE", jerry_number (CHANGE), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("RISING", jerry_number (RISING), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("FALLING", jerry_number (FALLING), true));
+
+  /* PINs Mode */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT", jerry_number (INPUT), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("OUTPUT", jerry_number (OUTPUT), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT_PULLUP", jerry_number (INPUT_PULLUP), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("INPUT_PULLDOWN", jerry_number (INPUT_PULLDOWN), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("OUTPUT_OPENDRAIN", jerry_number (OUTPUT_OPENDRAIN), true));
+
+  /* LEDs */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("PIN_LED", jerry_number (PIN_LED), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LED_BUILTIN", jerry_number (LED_BUILTIN), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LEDR", jerry_number (LEDR), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LEDG", jerry_number (LEDG), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LEDB", jerry_number (LEDB), true));
+
+  /* Analog pins */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A0", jerry_number (A0), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A1", jerry_number (A1), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A2", jerry_number (A2), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A3", jerry_number (A3), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A4", jerry_number (A4), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A5", jerry_number (A5), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A6", jerry_number (A6), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("A7", jerry_number (A7), true));
+
+  /* Digital pins */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D0", jerry_number (D0), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D1", jerry_number (D1), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D2", jerry_number (D2), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D3", jerry_number (D3), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D4", jerry_number (D4), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D5", jerry_number (D5), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D6", jerry_number (D6), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D7", jerry_number (D7), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D8", jerry_number (D8), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D9", jerry_number (D9), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D10", jerry_number (D10), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D11", jerry_number (D11), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D12", jerry_number (D12), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D13", jerry_number (D13), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D14", jerry_number (D14), true));
+  /* Pin D15, D16, D17 and D18 cannot be used as digital pin.*/
+  /*
+    JERRYXX_BOOL_CHK(jerryxx_register_global_property("D15", jerry_number (D15), true));
+    JERRYXX_BOOL_CHK(jerryxx_register_global_property("D16", jerry_number (D16), true));
+    JERRYXX_BOOL_CHK(jerryxx_register_global_property("D17", jerry_number (D17), true));
+    JERRYXX_BOOL_CHK(jerryxx_register_global_property("D18", jerry_number (D18), true));
+   */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D19", jerry_number (D19), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D20", jerry_number (D20), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("D21", jerry_number (D21), true));
 
   /* Register Functions in the global object */
 
@@ -717,7 +985,7 @@ JERRYXX_DECLARE_FUNCTION(attach_interrupt)
     jerry_value_free (global_obj_val);
   };
 
-  attachInterrupt ((pin_size_t)jerry_value_as_number (pin), (voidFuncPtrParam)func, (PinStatus)jerry_value_as_number (mode), (void*) callback_fn);
+  attachInterruptParam ((pin_size_t)jerry_value_as_number (pin), (voidFuncPtrParam)func, (PinStatus)jerry_value_as_number (mode), (void*) callback_fn);
 
   return jerry_undefined ();
 } /* js_attach_interrupt */

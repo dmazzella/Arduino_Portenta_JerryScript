@@ -51,28 +51,30 @@
 #define ARDUINO_PORTENTA_JERRYSCRIPT_API_PATCH_VERSION 0
 
 /*******************************************************************************
- *                                  Arduino API                                *
+ *                                   Extra API                                 *
  ******************************************************************************/
 
-#define JERRYXX_BOOL_CHK(f)       \
-    do                            \
-    {                             \
-        if( !( ret = (f) ) )      \
-        {                         \
-          goto cleanup;           \
-        }                         \
+#define JERRYXX_MAX_THREADS_NUMBER 20
+
+#define JERRYXX_BOOL_CHK(f)  \
+    do                       \
+    {                        \
+        if( !( ret = (f) ) ) \
+        {                    \
+          goto cleanup;      \
+        }                    \
     } while( 0 )
 
-#define JERRYXX_DECLARE_FUNCTION(f)                                        \
-  jerry_value_t                                                            \
-  js_##f (const jerry_call_info_t *call_info_p, /**< call information */   \
-          const jerry_value_t args_p[], /**< function arguments */         \
+#define JERRYXX_DECLARE_FUNCTION(f)                                         \
+  jerry_value_t                                                             \
+  js_##f (const jerry_call_info_t *call_info_p, /**< call information */    \
+          const jerry_value_t args_p[], /**< function arguments */          \
           const jerry_length_t args_cnt) /**< number of function arguments */
 
-#define JERRYXX_DEFINE_FUNCTION(f)                                        \
-  jerry_value_t                                                            \
-  js_##f (const jerry_call_info_t *call_info_p, /**< call information */   \
-          const jerry_value_t args_p[], /**< function arguments */         \
+#define JERRYXX_DEFINE_FUNCTION(f)                                           \
+  jerry_value_t                                                              \
+  js_##f (const jerry_call_info_t *call_info_p, /**< call information */     \
+          const jerry_value_t args_p[], /**< function arguments */           \
           const jerry_length_t args_cnt); /**< number of function arguments */
 
 #define JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(c, msg) \
@@ -82,9 +84,9 @@
   }
 
 #define JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(c, msg) \
-  if(c)                                              \
-  {                                                       \
-    return jerry_throw_sz (JERRY_ERROR_TYPE, msg);        \
+  if(c)                                                \
+  {                                                    \
+    return jerry_throw_sz (JERRY_ERROR_TYPE, msg);     \
   }
 
 /**
@@ -98,6 +100,56 @@ jerryxx_register_global_property (const char *name_p, /**< name of the property 
                                   jerry_value_t value, /**< value of the property */
                                   bool free_value); /**< take ownership of the value */
 
+/**
+ * Run JavaScript scheduler (user for switch setTimeout and setInterval threads).
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_scheduler_yield(void);
+
+/**
+ * Cleanup scheduler thread in state Deleted.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_cleanup_scheduler_map(void);
+
+/**
+ * Register Extra API into JavaScript global object.
+ *
+ * @return true - if the operation was successful,
+ *         false - otherwise.
+ */
+bool
+jerryxx_register_extra_api(void);
+
+/**
+ * Javascript: setTimeout
+ */
+JERRYXX_DEFINE_FUNCTION(set_timeout);
+
+/**
+ * Javascript: clearTimeout
+ */
+JERRYXX_DEFINE_FUNCTION(clear_timeout);
+
+/**
+ * Javascript: setInterval
+ */
+JERRYXX_DEFINE_FUNCTION(set_interval);
+
+/**
+ * Javascript: clearInterval
+ */
+JERRYXX_DEFINE_FUNCTION(clear_interval);
+
+/*******************************************************************************
+ *                                  Arduino API                                *
+ ******************************************************************************/
 
 /**
  * Register Arduino API into JavaScript global object.

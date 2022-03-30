@@ -147,31 +147,8 @@ void setup() {
   /* Register the print function in the global object */
   jerryx_register_global ("print", jerryx_handler_print);
 
-  /* Setup Global scope code */
-  jerry_value_t parsed_code = jerry_parse (script, sizeof (script) - 1, NULL);
-
-  /* Check if there is any JS code parse error */
-  if (jerry_value_is_error (parsed_code))
-  {
-    JERRYX_ERROR_MSG("parse: %d\n", jerry_value_is_error (parsed_code));
-  }
-  else
-  {
-    /* Execute the parsed source code in the Global scope */
-    jerry_value_t ret_value = jerry_run (parsed_code);
-
-    /* Check the execution return value if there is any error */
-    if (jerry_value_is_error (ret_value))
-    {
-      JERRYX_ERROR_MSG("run: %d\n", jerry_value_is_error (ret_value));
-    }
-
-    /* Returned value must be freed */
-    jerry_value_free (ret_value);
-  }
-
-  /* Parsed source code must be freed */
-  jerry_value_free (parsed_code);
+  /* Run script with 'eval' */
+  jerry_value_free (jerry_eval (script, sizeof (script) - 1, JERRY_PARSE_NO_OPTS));
 
   /* Cleanup engine */
   jerry_cleanup ();
