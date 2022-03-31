@@ -639,6 +639,10 @@ jerryxx_register_arduino_api(void)
 
   /* Register Constants in the global object */
 
+  /* Bit Order */
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("LSBFIRST", jerry_number (LSBFIRST), true));
+  JERRYXX_BOOL_CHK(jerryxx_register_global_property("MSBFIRST", jerry_number (MSBFIRST), true));
+
   /* PINs Status */
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("HIGH", jerry_number (HIGH), true));
   JERRYXX_BOOL_CHK(jerryxx_register_global_property("LOW", jerry_number (LOW), true));
@@ -720,6 +724,12 @@ jerryxx_register_arduino_api(void)
   JERRYXX_BOOL_CHK(jerryx_register_global ("analogReadResolution", js_analog_read_resolution));
   JERRYXX_BOOL_CHK(jerryx_register_global ("analogWriteResolution", js_analog_write_resolution));
   /* Advanced I/O */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("noTone", js_no_tone));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("pulseIn", js_pulse_in));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("pulseInLong", js_pulse_in_long));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("shiftIn", js_shift_in));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("shiftOut", js_shift_out));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("tone", js_tone));
   /* External Interrupts */
   JERRYXX_BOOL_CHK(jerryx_register_global ("attachInterrupt", js_attach_interrupt));
   JERRYXX_BOOL_CHK(jerryx_register_global ("detachInterrupt", js_detach_interrupt));
@@ -1131,3 +1141,173 @@ JERRYXX_DECLARE_FUNCTION(detach_interrupt)
 
   return jerry_undefined ();
 } /* js_detach_interrupt */
+
+/**
+ * Arduino: noTone
+ */
+JERRYXX_DECLARE_FUNCTION(no_tone)
+{
+  JERRYX_UNUSED (call_info_p);
+  double pin = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  noTone (pin);
+
+  return jerry_undefined ();
+} /* js_no_tone */
+
+/**
+ * Arduino: pulseIn
+ */
+JERRYXX_DECLARE_FUNCTION(pulse_in)
+{
+  JERRYX_UNUSED (call_info_p);
+  double pin = 0;
+  double value = 0;
+  double timeout = 1000000;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&value, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&timeout, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (pulseIn (pin, value, timeout));
+} /* js_pulse_in */
+
+/**
+ * Arduino: pulseInLong
+ */
+JERRYXX_DECLARE_FUNCTION(pulse_in_long)
+{
+  JERRYX_UNUSED (call_info_p);
+  double pin = 0;
+  double value = 0;
+  double timeout = 1000000;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&value, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&timeout, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (pulseInLong (pin, value, timeout));
+} /* js_pulse_in_long */
+
+/**
+ * Arduino: shiftIn
+ */
+JERRYXX_DECLARE_FUNCTION(shift_in)
+{
+  JERRYX_UNUSED (call_info_p);
+  double dataPin = 0;
+  double clockPin = 0;
+  double bitOrder = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&dataPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&clockPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&bitOrder, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  if(bitOrder != MSBFIRST && bitOrder != LSBFIRST)
+  {
+    return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'bitOrder' must be MSBFIRST or LSBFIRST.");
+  }
+
+  return jerry_number (shiftIn ((pin_size_t)dataPin, (pin_size_t)clockPin, (BitOrder)bitOrder));
+} /* js_shift_in */
+
+/**
+ * Arduino: shiftOut
+ */
+JERRYXX_DECLARE_FUNCTION(shift_out)
+{
+  JERRYX_UNUSED (call_info_p);
+  double dataPin = 0;
+  double clockPin = 0;
+  double bitOrder = 0;
+  double value = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&dataPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&clockPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&bitOrder, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 4);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  if(bitOrder != MSBFIRST && bitOrder != LSBFIRST)
+  {
+    return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'bitOrder' must be MSBFIRST or LSBFIRST.");
+  }
+
+  shiftOut ((pin_size_t)dataPin, (pin_size_t)clockPin, (BitOrder)bitOrder, value);
+
+  return jerry_undefined ();
+} /* js_shift_out */
+
+/**
+ * Arduino: tone
+ */
+JERRYXX_DECLARE_FUNCTION(tone)
+{
+  JERRYX_UNUSED (call_info_p);
+  double pin = 0;
+  double frequency = 0;
+  double duration = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&frequency, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&duration, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  tone (pin, frequency, duration);
+
+  return jerry_undefined ();
+} /* js_tone */

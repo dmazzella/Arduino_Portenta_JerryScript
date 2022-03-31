@@ -245,4 +245,34 @@ JERRYXX_DEFINE_FUNCTION(attach_interrupt);
  */
 JERRYXX_DEFINE_FUNCTION(detach_interrupt);
 
+/**
+ * Arduino: noTone
+ */
+JERRYXX_DEFINE_FUNCTION(no_tone);
+
+/**
+ * Arduino: pulseIn
+ */
+JERRYXX_DEFINE_FUNCTION(pulse_in);
+
+/**
+ * Arduino: pulseInLong
+ */
+JERRYXX_DEFINE_FUNCTION(pulse_in_long);
+
+/**
+ * Arduino: shiftIn
+ */
+JERRYXX_DEFINE_FUNCTION(shift_in);
+
+/**
+ * Arduino: shiftOut
+ */
+JERRYXX_DEFINE_FUNCTION(shift_out);
+
+/**
+ * Arduino: tone
+ */
+JERRYXX_DEFINE_FUNCTION(tone);
+
 #endif /* ARDUINO_PORTENTA_JERRYSCRIPT_H_ */

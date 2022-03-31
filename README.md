@@ -7,6 +7,22 @@ Integrate [ArduinoCore-mbed](https://github.com/arduino/ArduinoCore-mbed) and mo
 #### WARNING: 
 This project is in beta stage and is subject to changes of the code-base, including project-wide name changes and API changes.
 
+<details><summary>The build have below flags enabled, if needed you can disable this for reduce code size</summary>
+<p>
+
+jerryscript-config.h
+```c
+// Build differences from default:
+#define JERRY_LOGGING 1
+#define JERRY_LINE_INFO 1
+#define JERRY_ERROR_MESSAGES 1
+#define JERRY_GLOBAL_HEAP_SIZE 128
+#define JERRY_CPOINTER_32_BIT 1
+```
+</p>
+</details>
+
+
 ## Tested on:
  - [Portenta H7](https://www.arduino.cc/pro/hardware/product/portenta-h7) on M7 core
 
