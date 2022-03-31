@@ -502,11 +502,11 @@ JERRYXX_DECLARE_FUNCTION(set_timeout)
 JERRYXX_DECLARE_FUNCTION(clear_timeout)
 {
   JERRYX_UNUSED (call_info_p);
-  double timeout_id = 0;
+  uint32_t timeout_id = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&timeout_id, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&timeout_id, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -515,8 +515,7 @@ JERRYXX_DECLARE_FUNCTION(clear_timeout)
     return rv;
   }
 
-  int tid = (int)timeout_id;
-  std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (tid);
+  std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (timeout_id);
   if ( got != jerryxx_scheduler_threads_map.end() )
   {
     int idx = got->first;
@@ -591,11 +590,11 @@ JERRYXX_DECLARE_FUNCTION(set_interval)
 JERRYXX_DECLARE_FUNCTION(clear_interval)
 {
   JERRYX_UNUSED (call_info_p);
-  double interval_id = 0;
+  uint32_t interval_id = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&interval_id, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&interval_id, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -604,8 +603,7 @@ JERRYXX_DECLARE_FUNCTION(clear_interval)
     return rv;
   }
 
-  int iid = (int) (interval_id);
-  std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (iid);
+  std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (interval_id);
   if ( got != jerryxx_scheduler_threads_map.end() )
   {
     int idx = got->first;
@@ -718,6 +716,13 @@ jerryxx_register_arduino_api(void)
   JERRYXX_BOOL_CHK(jerryx_register_global ("randomSeed", js_random_seed));
   JERRYXX_BOOL_CHK(jerryx_register_global ("random", js_random));
   /* Bits and Bytes */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("bit", js_bit));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("bitClear", js_bit_clear));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("bitRead", js_bit_read));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("bitSet", js_bit_set));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("bitWrite", js_bit_write));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("highByte", js_high_byte));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("lowByte", js_low_byte));
   /* Analog I/O */
   JERRYXX_BOOL_CHK(jerryx_register_global ("analogRead", js_analog_read));
   JERRYXX_BOOL_CHK(jerryx_register_global ("analogWrite", js_analog_write));
@@ -752,13 +757,13 @@ cleanup:
 JERRYXX_DECLARE_FUNCTION(pin_mode)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
-  double mode = 0;
+  uint32_t pin = 0;
+  uint32_t mode = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&mode, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&mode, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
@@ -783,13 +788,13 @@ JERRYXX_DECLARE_FUNCTION(pin_mode)
 JERRYXX_DECLARE_FUNCTION(digital_write)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
-  double value = 0;
+  uint32_t pin = 0;
+  uint32_t value = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&value, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
@@ -814,11 +819,11 @@ JERRYXX_DECLARE_FUNCTION(digital_write)
 JERRYXX_DECLARE_FUNCTION(digital_read)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
+  uint32_t pin = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -836,11 +841,11 @@ JERRYXX_DECLARE_FUNCTION(digital_read)
 JERRYXX_DECLARE_FUNCTION(delay)
 {
   JERRYX_UNUSED (call_info_p);
-  double value = 0;
+  uint32_t value = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -860,11 +865,11 @@ JERRYXX_DECLARE_FUNCTION(delay)
 JERRYXX_DECLARE_FUNCTION(delay_microseconds)
 {
   JERRYX_UNUSED (call_info_p);
-  double value = 0;
+  uint32_t value = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -908,11 +913,11 @@ JERRYXX_DECLARE_FUNCTION(millis)
 JERRYXX_DECLARE_FUNCTION(random_seed)
 {
   JERRYX_UNUSED (call_info_p);
-  double seed = 0;
+  uint32_t seed = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&seed, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&seed, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -932,13 +937,13 @@ JERRYXX_DECLARE_FUNCTION(random_seed)
 JERRYXX_DECLARE_FUNCTION(random)
 {
   JERRYX_UNUSED (call_info_p);
-  double min = 0;
-  double max = 0;
+  uint32_t a = 0;
+  uint32_t b = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&min, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&max, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+    jerryx_arg_uint32 (&a, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&b, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
@@ -949,12 +954,11 @@ JERRYXX_DECLARE_FUNCTION(random)
 
   if (args_cnt == 1)
   {
-      max = min;
-      return jerry_number (random (max));
+      return jerry_number (random (a));
   }
   else if (args_cnt == 2)
   {
-      return jerry_number (random (min, max));
+      return jerry_number (random (a, b));
   }
 
   return jerry_number (0);
@@ -966,11 +970,11 @@ JERRYXX_DECLARE_FUNCTION(random)
 JERRYXX_DECLARE_FUNCTION(analog_read)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
+  uint32_t pin = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -988,13 +992,13 @@ JERRYXX_DECLARE_FUNCTION(analog_read)
 JERRYXX_DECLARE_FUNCTION(analog_write)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
-  double value = 0;
+  uint32_t pin = 0;
+  uint32_t value = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
@@ -1014,11 +1018,11 @@ JERRYXX_DECLARE_FUNCTION(analog_write)
 JERRYXX_DECLARE_FUNCTION(analog_read_resolution)
 {
   JERRYX_UNUSED (call_info_p);
-  double bits = 0;
+  uint32_t bits = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&bits, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&bits, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -1038,11 +1042,11 @@ JERRYXX_DECLARE_FUNCTION(analog_read_resolution)
 JERRYXX_DECLARE_FUNCTION(analog_write_resolution)
 {
   JERRYX_UNUSED (call_info_p);
-  double bits = 0;
+  uint32_t bits = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&bits, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&bits, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -1090,15 +1094,15 @@ JERRYXX_DECLARE_FUNCTION(no_interrupts)
 JERRYXX_DECLARE_FUNCTION(attach_interrupt)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
+  uint32_t pin = 0;
   jerry_value_t callback_fn = 0;
-  double mode = 0;
+  uint32_t mode = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
     jerryx_arg_function (&callback_fn, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&mode, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&mode, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
@@ -1124,11 +1128,11 @@ JERRYXX_DECLARE_FUNCTION(attach_interrupt)
 JERRYXX_DECLARE_FUNCTION(detach_interrupt)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
+  uint32_t pin = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -1148,11 +1152,11 @@ JERRYXX_DECLARE_FUNCTION(detach_interrupt)
 JERRYXX_DECLARE_FUNCTION(no_tone)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
+  uint32_t pin = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
@@ -1172,15 +1176,15 @@ JERRYXX_DECLARE_FUNCTION(no_tone)
 JERRYXX_DECLARE_FUNCTION(pulse_in)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
-  double value = 0;
-  double timeout = 1000000;
+  uint32_t pin = 0;
+  uint32_t value = 0;
+  uint32_t timeout = 1000000;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&value, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&timeout, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&timeout, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
@@ -1198,15 +1202,15 @@ JERRYXX_DECLARE_FUNCTION(pulse_in)
 JERRYXX_DECLARE_FUNCTION(pulse_in_long)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
-  double value = 0;
-  double timeout = 1000000;
+  uint32_t pin = 0;
+  uint32_t value = 0;
+  uint32_t timeout = 1000000;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&value, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&timeout, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&timeout, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
@@ -1224,15 +1228,15 @@ JERRYXX_DECLARE_FUNCTION(pulse_in_long)
 JERRYXX_DECLARE_FUNCTION(shift_in)
 {
   JERRYX_UNUSED (call_info_p);
-  double dataPin = 0;
-  double clockPin = 0;
-  double bitOrder = 0;
+  uint32_t dataPin = 0;
+  uint32_t clockPin = 0;
+  uint32_t bitOrder = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&dataPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&clockPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&bitOrder, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&dataPin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&clockPin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&bitOrder, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
@@ -1255,17 +1259,17 @@ JERRYXX_DECLARE_FUNCTION(shift_in)
 JERRYXX_DECLARE_FUNCTION(shift_out)
 {
   JERRYX_UNUSED (call_info_p);
-  double dataPin = 0;
-  double clockPin = 0;
-  double bitOrder = 0;
-  double value = 0;
+  uint32_t dataPin = 0;
+  uint32_t clockPin = 0;
+  uint32_t bitOrder = 0;
+  uint32_t value = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&dataPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&clockPin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&bitOrder, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&dataPin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&clockPin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&bitOrder, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP,  JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 4);
@@ -1290,15 +1294,15 @@ JERRYXX_DECLARE_FUNCTION(shift_out)
 JERRYXX_DECLARE_FUNCTION(tone)
 {
   JERRYX_UNUSED (call_info_p);
-  double pin = 0;
-  double frequency = 0;
-  double duration = 0;
+  uint32_t pin = 0;
+  uint32_t frequency = 0;
+  uint32_t duration = 0;
 
   const jerryx_arg_t mapping[] =
   {
-    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&frequency, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
-    jerryx_arg_number (&duration, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+    jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&frequency, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&duration, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
   const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
@@ -1311,3 +1315,174 @@ JERRYXX_DECLARE_FUNCTION(tone)
 
   return jerry_undefined ();
 } /* js_tone */
+
+
+/**
+ * Arduino: bit
+ */
+JERRYXX_DECLARE_FUNCTION(bit)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t n = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (bit (n));
+} /* js_bit */
+
+/**
+ * Arduino: bitClear
+ */
+JERRYXX_DECLARE_FUNCTION(bit_clear)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+  uint32_t n = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (bitClear (x, n));
+} /* js_bit_clear */
+
+/**
+ * Arduino: bitRead
+ */
+JERRYXX_DECLARE_FUNCTION(bit_read)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+  uint32_t n = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (bitRead (x, n));
+} /* js_bit_read */
+
+/**
+ * Arduino: bitSet
+ */
+JERRYXX_DECLARE_FUNCTION(bit_set)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+  uint32_t n = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  bitSet (x, n);
+
+  return jerry_undefined ();
+} /* js_bit_set */
+
+/**
+ * Arduino: bitWrite
+ */
+JERRYXX_DECLARE_FUNCTION(bit_write)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+  uint32_t n = 0;
+  uint32_t b = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&b, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  bitWrite (x, n, b);
+
+  return jerry_undefined ();
+} /* js_bit_write */
+
+/**
+ * Arduino: highByte
+ */
+JERRYXX_DECLARE_FUNCTION(high_byte)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (highByte (x));
+} /* js_low_byte */
+
+/**
+ * Arduino: lowByte
+ */
+JERRYXX_DECLARE_FUNCTION(low_byte)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (lowByte (x));
+
+  return jerry_undefined ();
+} /* js_low_byte */

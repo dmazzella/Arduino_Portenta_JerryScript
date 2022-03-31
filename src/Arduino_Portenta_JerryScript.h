@@ -275,4 +275,39 @@ JERRYXX_DEFINE_FUNCTION(shift_out);
  */
 JERRYXX_DEFINE_FUNCTION(tone);
 
+/**
+ * Arduino: bit
+ */
+JERRYXX_DEFINE_FUNCTION(bit);
+
+/**
+ * Arduino: bitClear
+ */
+JERRYXX_DEFINE_FUNCTION(bit_clear);
+
+/**
+ * Arduino: bitRead
+ */
+JERRYXX_DEFINE_FUNCTION(bit_read);
+
+/**
+ * Arduino: bitSet
+ */
+JERRYXX_DEFINE_FUNCTION(bit_set);
+
+/**
+ * Arduino: bitWrite
+ */
+JERRYXX_DEFINE_FUNCTION(bit_write);
+
+/**
+ * Arduino: highByte
+ */
+JERRYXX_DEFINE_FUNCTION(high_byte);
+
+/**
+ * Arduino: lowByte
+ */
+JERRYXX_DEFINE_FUNCTION(low_byte);
+
 #endif /* ARDUINO_PORTENTA_JERRYSCRIPT_H_ */

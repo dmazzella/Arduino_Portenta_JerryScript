@@ -73,13 +73,13 @@ jerryscript-config.h
         - [x] randomSeed()
 
       - Bits and Bytes:
-        - [ ] bit()
-        - [ ] bitClear()
-        - [ ] bitRead()
-        - [ ] bitSet()
-        - [ ] bitWrite()
-        - [ ] highByte()
-        - [ ] lowByte()
+        - [x] bit()
+        - [x] bitClear()
+        - [x] bitRead()
+        - [x] bitSet()
+        - [x] bitWrite()
+        - [x] highByte()
+        - [x] lowByte()
 
       - Analog I/O:
         - [x] analogRead()
@@ -88,12 +88,12 @@ jerryscript-config.h
         - [x] analogWriteResolution()
 
       - Advanced I/O:
-        - [ ] noTone()
-        - [ ] pulseIn()
-        - [ ] pulseInLong()
-        - [ ] shiftIn()
-        - [ ] shiftOut()
-        - [ ] tone()
+        - [x] noTone()
+        - [x] pulseIn()
+        - [x] pulseInLong()
+        - [x] shiftIn()
+        - [x] shiftOut()
+        - [x] tone()
 
       - External Interrupts:
         - [x] attachInterrupt()
