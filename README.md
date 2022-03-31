@@ -38,20 +38,23 @@ jerryscript-config.h
 
       - [x] HIGH | LOW | CHANGE | RISING | FALLING
       - [x] INPUT | OUTPUT | INPUT_PULLUP
+      - [x] LSBFIRST | MSBFIRST
       - [x] PIN_LED | LED_BUILTIN | LEDR | LEDG | LEDB
+      - [x] A0 | A1 | A2 | A3 | A4 | A5 | A6 | A7
+      - [x] D0 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9 | D10 | D11 | D12 | D13 | D14 | D19 | D20 | D21
 
     ### Functions:
 
       - Digital I/O:
-        - [x] pinMode
-        - [x] digitalWrite
-        - [x] digitalRead
+        - [x] pinMode()
+        - [x] digitalWrite()
+        - [x] digitalRead()
 
       - Time:
-        - [x] delay
-        - [x] delayMicroseconds
-        - [x] micros
-        - [x] millis
+        - [x] delay()
+        - [x] delayMicroseconds()
+        - [x] micros()
+        - [x] millis()
 
       - Math:
         - [ ] abs()
