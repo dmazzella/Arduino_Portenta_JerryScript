@@ -453,13 +453,20 @@ cleanup:
 JERRYXX_DECLARE_FUNCTION(set_timeout)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX((args_cnt != 1 && args_cnt != 2), "Wrong arguments count in 'setTimeout' function.");
+  jerry_value_t callback_fn = 0;
+  uint32_t delay_time = 0;
 
-  jerry_value_t callback_fn = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_function (callback_fn), "Wrong argument 'callback' must be a function.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_function (&callback_fn, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&delay_time, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+  };
 
-  jerry_value_t delay_time = (args_cnt == 2 ? args_p[1] : jerry_number (0));
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (delay_time), "Wrong argument 'delay' must be a number.");
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
 
   jerryxx_cleanup_scheduler_map();
 
@@ -468,16 +475,14 @@ JERRYXX_DECLARE_FUNCTION(set_timeout)
     rtos::Thread * thread = new rtos::Thread;
     thread->start([callback_fn, delay_time](void) -> void {
       jerry_value_t callback_fn_copy = jerry_value_copy (callback_fn);
-      jerry_value_t delay_time_copy = jerry_value_copy (delay_time);
 
-      rtos::ThisThread::sleep_for(abs (jerry_value_as_number (delay_time_copy)));
+      rtos::ThisThread::sleep_for(abs (delay_time));
 
       jerry_value_t global_obj_val = jerry_current_realm ();
       jerry_value_t result_val = jerry_call (callback_fn_copy, global_obj_val, NULL, 0);
       jerry_value_free (result_val);
       jerry_value_free (global_obj_val);
       jerry_value_free (callback_fn_copy);
-      jerry_value_free (delay_time_copy);
     });
     int idx = (int)thread->get_id();
 
@@ -497,13 +502,20 @@ JERRYXX_DECLARE_FUNCTION(set_timeout)
 JERRYXX_DECLARE_FUNCTION(clear_timeout)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'clearTimeout' function.");
+  double timeout_id = 0;
 
-  jerry_value_t timeout_id = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (timeout_id), "Wrong argument 'timeoutId' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&timeout_id, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  int tid = jerry_value_as_number (timeout_id);
-  
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  int tid = (int)timeout_id;
   std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (tid);
   if ( got != jerryxx_scheduler_threads_map.end() )
   {
@@ -527,13 +539,20 @@ JERRYXX_DECLARE_FUNCTION(clear_timeout)
 JERRYXX_DECLARE_FUNCTION(set_interval)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX((args_cnt != 1 && args_cnt != 2), "Wrong arguments count in 'setInterval' function.");
+  jerry_value_t callback_fn = 0;
+  uint32_t delay_time = 0;
 
-  jerry_value_t callback_fn = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_function (callback_fn), "Wrong argument 'callback' must be a function.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_function (&callback_fn, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&delay_time, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+  };
 
-  jerry_value_t delay_time = (args_cnt == 2 ? args_p[1] : jerry_number (0));
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (delay_time), "Wrong argument 'delay' must be a number.");
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
 
   jerryxx_cleanup_scheduler_map();
 
@@ -544,16 +563,14 @@ JERRYXX_DECLARE_FUNCTION(set_interval)
       while(true)
       {
         jerry_value_t callback_fn_copy = jerry_value_copy (callback_fn);
-        jerry_value_t delay_time_copy = jerry_value_copy (delay_time);
 
-        rtos::ThisThread::sleep_for(abs (jerry_value_as_number (delay_time_copy)));
+        rtos::ThisThread::sleep_for(abs (delay_time));
 
         jerry_value_t global_obj_val = jerry_current_realm ();
         jerry_value_t result_val = jerry_call (callback_fn_copy, global_obj_val, NULL, 0);
         jerry_value_free (result_val);
         jerry_value_free (global_obj_val);
         jerry_value_free (callback_fn_copy);
-        jerry_value_free (delay_time_copy);
       }
     });
     int idx = (int)thread->get_id();
@@ -574,12 +591,20 @@ JERRYXX_DECLARE_FUNCTION(set_interval)
 JERRYXX_DECLARE_FUNCTION(clear_interval)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'clearInterval' function.");
+  double interval_id = 0;
 
-  jerry_value_t interval_id = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (interval_id), "Wrong argument 'intervalId' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&interval_id, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  int iid = jerry_value_as_number (interval_id);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  int iid = (int) (interval_id);
   std::unordered_map<int, rtos::Thread*>::const_iterator got = jerryxx_scheduler_threads_map.find (iid);
   if ( got != jerryxx_scheduler_threads_map.end() )
   {
@@ -717,21 +742,27 @@ cleanup:
 JERRYXX_DECLARE_FUNCTION(pin_mode)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 2, "Wrong arguments count in 'pinMode' function.");
+  double pin = 0;
+  double mode = 0;
 
-  jerry_value_t pin = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
-  
-  jerry_value_t mode = args_p[1];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (mode), "Wrong argument 'mode' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&mode, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  double pin_mode = jerry_value_as_number (mode);
-  if(pin_mode != INPUT && pin_mode != OUTPUT && pin_mode != INPUT_PULLUP && pin_mode != INPUT_PULLDOWN)
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  if(mode != INPUT && mode != OUTPUT && mode != INPUT_PULLUP && mode != INPUT_PULLDOWN)
   {
     return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'mode' must be INPUT, OUTPUT, INPUT_PULLUP or INPUT_PULLDOWN.");
   }
 
-  pinMode (jerry_value_as_number (pin), pin_mode);
+  pinMode (pin, mode);
 
   return jerry_undefined ();
 } /* js_pin_mode */
@@ -742,21 +773,27 @@ JERRYXX_DECLARE_FUNCTION(pin_mode)
 JERRYXX_DECLARE_FUNCTION(digital_write)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 2, "Wrong arguments count in 'digitalWrite' function.");
+  double pin = 0;
+  double value = 0;
 
-  jerry_value_t pin = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE((!jerry_value_is_number (pin)), "Wrong argument 'pin' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&value, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  jerry_value_t value = args_p[1];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE((!jerry_value_is_number (value) && !jerry_value_is_boolean (value)), "Wrong argument 'value' must be a number or boolean.");
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
 
-  double pin_value = (jerry_value_is_boolean (value) ? (jerry_value_is_true (value) ? HIGH : LOW) : jerry_value_as_number (value));
-  if(pin_value != HIGH && pin_value != LOW)
+  if(value != HIGH && value != LOW)
   {
     return jerry_throw_sz (JERRY_ERROR_RANGE, "Wrong argument 'value' must be HIGH or LOW.");
   }
 
-  digitalWrite (jerry_value_as_number (pin), pin_value);
+  digitalWrite (pin, value);
 
   return jerry_undefined ();
 } /* js_digital_write */
@@ -767,12 +804,20 @@ JERRYXX_DECLARE_FUNCTION(digital_write)
 JERRYXX_DECLARE_FUNCTION(digital_read)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'digitalRead' function.");
+  double pin = 0;
 
-  jerry_value_t pin = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  return jerry_number (digitalRead (jerry_value_as_number (pin)));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (digitalRead (pin));
 } /* js_digital_read */
 
 /**
@@ -781,12 +826,20 @@ JERRYXX_DECLARE_FUNCTION(digital_read)
 JERRYXX_DECLARE_FUNCTION(delay)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'delay' function.");
+  double value = 0;
 
-  jerry_value_t value = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (value), "Wrong argument 'value' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  delay (jerry_value_as_number (value));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  delay (value);
 
   return jerry_undefined ();
 } /* js_delay */
@@ -797,12 +850,20 @@ JERRYXX_DECLARE_FUNCTION(delay)
 JERRYXX_DECLARE_FUNCTION(delay_microseconds)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'delayMicroseconds' function.");
+  double value = 0;
 
-  jerry_value_t value = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (value), "Wrong argument 'value' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  delayMicroseconds (jerry_value_as_number (value));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  delayMicroseconds (value);
 
   return jerry_undefined ();
 } /* js_delay_microseconds */
@@ -813,7 +874,8 @@ JERRYXX_DECLARE_FUNCTION(delay_microseconds)
 JERRYXX_DECLARE_FUNCTION(micros)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'micros' function.");
+  JERRYX_UNUSED (args_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count");
 
   return jerry_number (micros ());
 } /* js_micros */
@@ -824,7 +886,8 @@ JERRYXX_DECLARE_FUNCTION(micros)
 JERRYXX_DECLARE_FUNCTION(millis)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'millis' function.");
+  JERRYX_UNUSED (args_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count");
 
   return jerry_number (millis ());
 } /* js_millis */
@@ -835,12 +898,20 @@ JERRYXX_DECLARE_FUNCTION(millis)
 JERRYXX_DECLARE_FUNCTION(random_seed)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'randomSeed' function.");
+  double seed = 0;
 
-  jerry_value_t seed = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (seed), "Wrong argument 'seed' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&seed, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  randomSeed (jerry_value_as_number (seed));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  randomSeed (seed);
 
   return jerry_undefined();
 } /* js_random_seed */
@@ -851,21 +922,29 @@ JERRYXX_DECLARE_FUNCTION(random_seed)
 JERRYXX_DECLARE_FUNCTION(random)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX((args_cnt != 1 && args_cnt != 2), "Wrong arguments count in 'random' function.");
+  double min = 0;
+  double max = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&min, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&max, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
 
   if (args_cnt == 1)
   {
-      jerry_value_t r_max = args_p[0];
-      JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (r_max), "Wrong argument 'max' must be a number.");
-      return jerry_number (random (jerry_value_as_number (r_max)));
+      max = min;
+      return jerry_number (random (max));
   }
   else if (args_cnt == 2)
   {
-      jerry_value_t r_min = args_p[0];
-      jerry_value_t r_max = args_p[1];
-      JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (r_min), "Wrong argument 'min' must be a number.");
-      JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (r_max), "Wrong argument 'max' must be a number.");
-      return jerry_number (random (jerry_value_as_number (r_min), jerry_value_as_number (r_max)));
+      return jerry_number (random (min, max));
   }
 
   return jerry_number (0);
@@ -877,12 +956,20 @@ JERRYXX_DECLARE_FUNCTION(random)
 JERRYXX_DECLARE_FUNCTION(analog_read)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'analogRead' function.");
+  double pin = 0;
 
-  jerry_value_t pin = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  return jerry_number (analogRead (jerry_value_as_number (pin)));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (analogRead (pin));
 } /* js_analog_read */
 
 /**
@@ -891,15 +978,22 @@ JERRYXX_DECLARE_FUNCTION(analog_read)
 JERRYXX_DECLARE_FUNCTION(analog_write)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 2, "Wrong arguments count in 'analogWrite' function.");
+  double pin = 0;
+  double value = 0;
 
-  jerry_value_t pin = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&value, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  jerry_value_t value = args_p[1];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (value), "Wrong argument 'value' must be a number.");
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
 
-  analogWrite (jerry_value_as_number (pin), jerry_value_as_number (value));
+  analogWrite (pin, value);
 
   return jerry_undefined ();
 } /* js_analog_write */
@@ -910,12 +1004,20 @@ JERRYXX_DECLARE_FUNCTION(analog_write)
 JERRYXX_DECLARE_FUNCTION(analog_read_resolution)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'analogReadResolution' function.");
+  double bits = 0;
 
-  jerry_value_t bits = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (bits), "Wrong argument 'bits' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&bits, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  analogReadResolution (jerry_value_as_number (bits));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  analogReadResolution (bits);
 
   return jerry_undefined ();
 } /* js_analog_read_resolution */
@@ -926,12 +1028,20 @@ JERRYXX_DECLARE_FUNCTION(analog_read_resolution)
 JERRYXX_DECLARE_FUNCTION(analog_write_resolution)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'analogWriteResolution' function.");
+  double bits = 0;
 
-  jerry_value_t bits = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (bits), "Wrong argument 'bits' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&bits, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  analogWriteResolution (jerry_value_as_number (bits));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  analogWriteResolution (bits);
 
   return jerry_undefined ();
 } /* js_analog_write_resolution */
@@ -942,7 +1052,8 @@ JERRYXX_DECLARE_FUNCTION(analog_write_resolution)
 JERRYXX_DECLARE_FUNCTION(interrupts)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'interrupts' function.");
+  JERRYX_UNUSED (args_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count");
 
   interrupts();
 
@@ -955,7 +1066,8 @@ JERRYXX_DECLARE_FUNCTION(interrupts)
 JERRYXX_DECLARE_FUNCTION(no_interrupts)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count in 'noInterrupts' function.");
+  JERRYX_UNUSED (args_p);
+  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 0, "Wrong arguments count");
 
   noInterrupts();
 
@@ -968,16 +1080,22 @@ JERRYXX_DECLARE_FUNCTION(no_interrupts)
 JERRYXX_DECLARE_FUNCTION(attach_interrupt)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 3, "Wrong arguments count in 'attachInterrupt' function.");
+  double pin = 0;
+  jerry_value_t callback_fn = 0;
+  double mode = 0;
 
-  jerry_value_t pin = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_function (&callback_fn, JERRYX_ARG_REQUIRED),
+    jerryx_arg_number (&mode, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  jerry_value_t callback_fn = args_p[1];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_function (callback_fn), "Wrong argument 'ISR' must be a function.");
-
-  jerry_value_t mode = args_p[2];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (mode), "Wrong argument 'mode' must be a number.");
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
 
   auto func = [](void* callback_fn) -> void {
     jerry_value_t global_obj_val = jerry_current_realm ();
@@ -985,7 +1103,7 @@ JERRYXX_DECLARE_FUNCTION(attach_interrupt)
     jerry_value_free (global_obj_val);
   };
 
-  attachInterruptParam ((pin_size_t)jerry_value_as_number (pin), (voidFuncPtrParam)func, (PinStatus)jerry_value_as_number (mode), (void*) callback_fn);
+  attachInterruptParam ((pin_size_t)pin, (voidFuncPtrParam)func, (PinStatus)mode, (void*) callback_fn);
 
   return jerry_undefined ();
 } /* js_attach_interrupt */
@@ -996,12 +1114,20 @@ JERRYXX_DECLARE_FUNCTION(attach_interrupt)
 JERRYXX_DECLARE_FUNCTION(detach_interrupt)
 {
   JERRYX_UNUSED (call_info_p);
-  JERRYXX_ON_ARGS_COUNT_THROW_ERROR_SYNTAX(args_cnt != 1, "Wrong arguments count in 'detachInterrupt' function.");
+  double pin = 0;
 
-  jerry_value_t pin = args_p[0];
-  JERRYXX_ON_TYPE_CHECK_THROW_ERROR_TYPE(!jerry_value_is_number (pin), "Wrong argument 'pin' must be a number.");
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_number (&pin, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
 
-  detachInterrupt (jerry_value_as_number (pin));
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  detachInterrupt (pin);
 
   return jerry_undefined ();
 } /* js_detach_interrupt */

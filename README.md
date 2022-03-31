@@ -6,7 +6,6 @@ Integrate [ArduinoCore-mbed](https://github.com/arduino/ArduinoCore-mbed) and mo
 
 #### WARNING: 
 This project is in beta stage and is subject to changes of the code-base, including project-wide name changes and API changes.
-See Goals for a list of things supported and which will be supported in the future
 
 ## Tested on:
  - [Portenta H7](https://www.arduino.cc/pro/hardware/product/portenta-h7) on M7 core
@@ -168,4 +167,4 @@ Hello, World! 0.6900010318495333
 </p>
 </details>
 
-#### for other see `examples` folder of this repository
+for other see `examples` folder of this repository
