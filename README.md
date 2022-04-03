@@ -129,6 +129,7 @@ jerryscript-config.h
 
     </p>
     </details>
+- [ ] External library from javascript
 
 ## Examples:
 
