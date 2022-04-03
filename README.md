@@ -30,8 +30,8 @@ jerryscript-config.h
 
  - [x] Working JerryScript engine
  - [x] Working Repl
- - [ ] Expose Arduino API in javascript ![In progress](https://progress-bar.dev/90)
-    <details><summary>Details</summary>
+ - [ ] Arduino API from javascript ![In progress](https://progress-bar.dev/90/?title=completed)
+    <details><summary>In progress</summary>
     <p>
 
     ### Constants:
