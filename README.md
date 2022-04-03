@@ -57,19 +57,19 @@ jerryscript-config.h
         - [x] millis()
 
       - Math:
-        - [ ] abs()
-        - [ ] constrain()
-        - [ ] map()
-        - [ ] max()
-        - [ ] min()
-        - [ ] pow()
-        - [ ] sq()
-        - [ ] sqrt()
+        - [x] abs() - via javascript 'Math' module
+        - [x] constrain()
+        - [x] map()
+        - [x] max() - via javascript 'Math' module
+        - [x] min() - via javascript 'Math' module
+        - [x] pow() - via javascript 'Math' module
+        - [x] sq()
+        - [x] sqrt() - via javascript 'Math' module
 
       - Trigonometry:
-        - [ ] cos()
-        - [ ] sin()
-        - [ ] tan()
+        - [x] cos() - via javascript 'Math' module
+        - [x] sin() - via javascript 'Math' module
+        - [x] tan() - via javascript 'Math' module
 
       - Random Numbers:
         - [x] random()
@@ -107,23 +107,25 @@ jerryscript-config.h
         - [x] noInterrupts()
 
       - Characters:
-        - [ ] isAlpha()
-        - [ ] isAlphaNumeric()
-        - [ ] isAscii()
-        - [ ] isControl()
-        - [ ] isDigit()
-        - [ ] isGraph()
-        - [ ] isHexadecimalDigit()
-        - [ ] isLowerCase()
-        - [ ] isPrintable()
-        - [ ] isPunct()
-        - [ ] isSpace()
-        - [ ] isUpperCase()
-        - [ ] isWhitespace()
+        - [x] isAlpha()
+        - [x] isAlphaNumeric()
+        - [x] isAscii()
+        - [x] isControl()
+        - [x] isDigit()
+        - [x] isGraph()
+        - [x] isHexadecimalDigit()
+        - [x] isLowerCase()
+        - [x] isPrintable()
+        - [x] isPunct()
+        - [x] isSpace()
+        - [x] isUpperCase()
+        - [x] isWhitespace()
 
       - Communication:
         - [ ] Serial
+        - [ ] SPI
         - [ ] Stream
+        - [ ] Wire
 
     </p>
     </details>
