@@ -310,4 +310,84 @@ JERRYXX_DEFINE_FUNCTION(high_byte);
  */
 JERRYXX_DEFINE_FUNCTION(low_byte);
 
+/**
+ * Arduino: constrain
+ */
+JERRYXX_DEFINE_FUNCTION(constrain);
+
+/**
+ * Arduino: map
+ */
+JERRYXX_DEFINE_FUNCTION(map);
+
+/**
+ * Arduino: sq
+ */
+JERRYXX_DEFINE_FUNCTION(sq);
+
+/**
+ * Arduino: isAlpha
+ */
+JERRYXX_DEFINE_FUNCTION(is_alpha);
+
+/**
+ * Arduino: isAlphaNumeric
+ */
+JERRYXX_DEFINE_FUNCTION(is_alpha_numeric);
+
+/**
+ * Arduino: isAscii
+ */
+JERRYXX_DEFINE_FUNCTION(is_ascii);
+
+/**
+ * Arduino: isControl
+ */
+JERRYXX_DEFINE_FUNCTION(is_control);
+
+/**
+ * Arduino: isDigit
+ */
+JERRYXX_DEFINE_FUNCTION(is_digit);
+
+/**
+ * Arduino: isGraph
+ */
+JERRYXX_DEFINE_FUNCTION(is_graph);
+
+/**
+ * Arduino: isHexadecimalDigit
+ */
+JERRYXX_DEFINE_FUNCTION(is_hexadecimal_digit);
+
+/**
+ * Arduino: isLowerCase
+ */
+JERRYXX_DEFINE_FUNCTION(is_lower_case);
+
+/**
+ * Arduino: isPrintable
+ */
+JERRYXX_DEFINE_FUNCTION(is_printable);
+
+/**
+ * Arduino: isPunct
+ */
+JERRYXX_DEFINE_FUNCTION(is_punct);
+
+/**
+ * Arduino: isSpace
+ */
+JERRYXX_DEFINE_FUNCTION(is_space);
+
+/**
+ * Arduino: isUpperCase
+ */
+JERRYXX_DEFINE_FUNCTION(is_upper_case);
+
+/**
+ * Arduino: isWhitespace
+ */
+JERRYXX_DEFINE_FUNCTION(is_whitespace);
+
 #endif /* ARDUINO_PORTENTA_JERRYSCRIPT_H_ */

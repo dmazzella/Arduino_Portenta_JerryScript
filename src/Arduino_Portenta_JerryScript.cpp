@@ -711,7 +711,12 @@ jerryxx_register_arduino_api(void)
   JERRYXX_BOOL_CHK(jerryx_register_global ("micros", js_micros));
   JERRYXX_BOOL_CHK(jerryx_register_global ("millis", js_millis));
   /* Math */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("constrain" , js_constrain));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("map" , js_map));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("sq", js_sq));
+  /* 'abs', 'max', 'min', 'pow', 'sqrt' functions are supported via javascript 'Math' module */
   /* Trigonometry */
+  /* 'cos', 'sin' and 'tan' functions are supported via javascript 'Math' module */
   /* Random Numbers */
   JERRYXX_BOOL_CHK(jerryx_register_global ("randomSeed", js_random_seed));
   JERRYXX_BOOL_CHK(jerryx_register_global ("random", js_random));
@@ -742,10 +747,27 @@ jerryxx_register_arduino_api(void)
   JERRYXX_BOOL_CHK(jerryx_register_global ("interrupts", js_interrupts));
   JERRYXX_BOOL_CHK(jerryx_register_global ("noInterrupts", js_no_interrupts));
   /* Characters */
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isAlpha", js_is_alpha));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isAlphaNumeric", js_is_alpha_numeric));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isAscii", js_is_ascii));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isControl", js_is_control));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isDigit", js_is_digit));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isGraph", js_is_graph));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isHexadecimalDigit", js_is_hexadecimal_digit));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isLowerCase", js_is_lower_case));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isPrintable", js_is_printable));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isPunct", js_is_punct));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isSpace", js_is_space));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isUpperCase", js_is_upper_case));
+  JERRYXX_BOOL_CHK(jerryx_register_global ("isWhitespace", js_is_whitespace));
 
   /* Register Objects in the global object */
 
   /* Communication */
+  /* Serial */
+  /* SPI */
+  /* Stream */
+  /* Wire */
 
 cleanup:
   return ret;
@@ -1483,6 +1505,368 @@ JERRYXX_DECLARE_FUNCTION(low_byte)
   }
 
   return jerry_number (lowByte (x));
-
-  return jerry_undefined ();
 } /* js_low_byte */
+
+/**
+ * Arduino: constrain
+ */
+JERRYXX_DECLARE_FUNCTION(constrain)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+  uint32_t a = 0;
+  uint32_t b = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&a, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&b, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (constrain (x, a, b));
+} /* js_constrain */
+
+/**
+ * Arduino: map
+ */
+JERRYXX_DECLARE_FUNCTION(map)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t value = 0;
+  uint32_t fromLow = 0;
+  uint32_t fromHigh = 0;
+  uint32_t toLow = 0;
+  uint32_t toHigh = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&fromLow, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&fromHigh, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&toLow, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+    jerryx_arg_uint32 (&toHigh, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 5);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (map (value, fromLow, fromHigh, toLow, toHigh));
+} /* js_map */
+
+/**
+ * Arduino: sq
+ */
+JERRYXX_DECLARE_FUNCTION(sq)
+{
+  JERRYX_UNUSED (call_info_p);
+  uint32_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (sq (x));
+} /* js_sq */
+
+/**
+ * Arduino: isAlpha
+ */
+JERRYXX_DECLARE_FUNCTION(is_alpha)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isAlpha (x));
+} /* js_is_alpha */
+
+/**
+ * Arduino: isAlphaNumeric
+ */
+JERRYXX_DECLARE_FUNCTION(is_alpha_numeric)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isAlphaNumeric (x));
+} /* js_is_alpha_numeric */
+
+/**
+ * Arduino: isAscii
+ */
+JERRYXX_DECLARE_FUNCTION(is_ascii)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isAscii (x));
+} /* js_is_ascii */
+
+/**
+ * Arduino: isControl
+ */
+JERRYXX_DECLARE_FUNCTION(is_control)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isControl (x));
+} /* js_is_control */
+
+/**
+ * Arduino: isDigit
+ */
+JERRYXX_DECLARE_FUNCTION(is_digit)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isDigit (x));
+} /* js_is_digit */
+
+/**
+ * Arduino: isGraph
+ */
+JERRYXX_DECLARE_FUNCTION(is_graph)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isGraph (x));
+} /* js_is_graph */
+
+/**
+ * Arduino: isHexadecimalDigit
+ */
+JERRYXX_DECLARE_FUNCTION(is_hexadecimal_digit)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isHexadecimalDigit (x));
+} /* js_is_hexadecimal_digit */
+
+/**
+ * Arduino: isLowerCase
+ */
+JERRYXX_DECLARE_FUNCTION(is_lower_case)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isLowerCase (x));
+} /* js_is_lower_case */
+
+/**
+ * Arduino: isPrintable
+ */
+JERRYXX_DECLARE_FUNCTION(is_printable)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isPrintable (x));
+} /* js_is_printable */
+
+/**
+ * Arduino: isPunct
+ */
+JERRYXX_DECLARE_FUNCTION(is_punct)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isPunct (x));
+} /* js_is_punct */
+
+/**
+ * Arduino: isSpace
+ */
+JERRYXX_DECLARE_FUNCTION(is_space)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isSpace (x));
+} /* js_is_space */
+
+/**
+ * Arduino: isUpperCase
+ */
+JERRYXX_DECLARE_FUNCTION(is_upper_case)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isUpperCase (x));
+} /* js_is_upper_case */
+
+/**
+ * Arduino: isWhitespace
+ */
+JERRYXX_DECLARE_FUNCTION(is_whitespace)
+{
+  JERRYX_UNUSED (call_info_p);
+  int8_t x = 0;
+
+  const jerryx_arg_t mapping[] =
+  {
+    jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
+  };
+
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  if (jerry_value_is_exception (rv))
+  {
+    return rv;
+  }
+
+  return jerry_number (isWhitespace (x));
+} /* js_is_whitespace */
