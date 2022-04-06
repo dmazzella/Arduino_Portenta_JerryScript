@@ -155,19 +155,8 @@ jerry_port_line_read (jerry_size_t *out_size_p)
         data += (char)Serial.read();
       }
 
-      if (data != "")
-      {
-        char *line_p = NULL;
-        if ((line_p = (char *) malloc (data.length() * sizeof(char))) != NULL)
-        {
-          *out_size_p = data.length();
-          memcpy(line_p, data.c_str(), *out_size_p);
-          return (jerry_char_t *) line_p;
-        }
-      }
-
-      *out_size_p = 0;
-      return (jerry_char_t *) NULL;
+      *out_size_p = data.length();
+      return (jerry_char_t *) ((*out_size_p > 0) ? (new String(data))->c_str() : NULL);
     }
   }
 
