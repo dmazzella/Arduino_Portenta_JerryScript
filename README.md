@@ -36,96 +36,96 @@ jerryscript-config.h
 
     ### Constants:
 
-      - [x] HIGH | LOW | CHANGE | RISING | FALLING
-      - [x] INPUT | OUTPUT | INPUT_PULLUP
-      - [x] LSBFIRST | MSBFIRST
-      - [x] PIN_LED | LED_BUILTIN | LEDR | LEDG | LEDB
-      - [x] A0 | A1 | A2 | A3 | A4 | A5 | A6 | A7
-      - [x] D0 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9 | D10 | D11 | D12 | D13 | D14 | D19 | D20 | D21
+      - [x] `HIGH | LOW | CHANGE | RISING | FALLING`
+      - [x] `INPUT | OUTPUT | INPUT_PULLUP`
+      - [x] `LSBFIRST | MSBFIRST`
+      - [x] `PIN_LED | LED_BUILTIN | LEDR | LEDG | LEDB`
+      - [x] `A0 | A1 | A2 | A3 | A4 | A5 | A6 | A7`
+      - [x] `D0 | D1 | D2 | D3 | D4 | D5 | D6 | D7 | D8 | D9 | D10 | D11 | D12 | D13 | D14 | D19 | D20 | D21`
 
     ### Functions:
 
       - Digital I/O:
-        - [x] pinMode()
-        - [x] digitalWrite()
-        - [x] digitalRead()
+        - [x] `pinMode()`
+        - [x] `digitalWrite()`
+        - [x] `digitalRead()`
 
       - Time:
-        - [x] delay()
-        - [x] delayMicroseconds()
-        - [x] micros()
-        - [x] millis()
+        - [x] `delay()`
+        - [x] `delayMicroseconds()`
+        - [x] `micros()`
+        - [x] `millis()`
 
       - Math:
-        - [x] abs() - via javascript 'Math' module
-        - [x] constrain()
-        - [x] map()
-        - [x] max() - via javascript 'Math' module
-        - [x] min() - via javascript 'Math' module
-        - [x] pow() - via javascript 'Math' module
-        - [x] sq()
-        - [x] sqrt() - via javascript 'Math' module
+        - [x] `abs()` - via javascript '`Math`' module
+        - [x] `constrain()`
+        - [x] `map()`
+        - [x] `max()` - via javascript '`Math`' module
+        - [x] `min()` - via javascript '`Math`' module
+        - [x] `pow()` - via javascript '`Math`' module
+        - [x] `sq()`
+        - [x] `sqrt()` - via javascript '`Math`' module
 
       - Trigonometry:
-        - [x] cos() - via javascript 'Math' module
-        - [x] sin() - via javascript 'Math' module
-        - [x] tan() - via javascript 'Math' module
+        - [x] `cos()` - via javascript '`Math`' module
+        - [x] `sin()` - via javascript '`Math`' module
+        - [x] `tan()` - via javascript '`Math`' module
 
       - Random Numbers:
-        - [x] random()
-        - [x] randomSeed()
+        - [x] `random()`
+        - [x] `randomSeed()`
 
       - Bits and Bytes:
-        - [x] bit()
-        - [x] bitClear()
-        - [x] bitRead()
-        - [x] bitSet()
-        - [x] bitWrite()
-        - [x] highByte()
-        - [x] lowByte()
+        - [x] `bit()`
+        - [x] `bitClear()`
+        - [x] `bitRead()`
+        - [x] `bitSet()`
+        - [x] `bitWrite()`
+        - [x] `highByte()`
+        - [x] `lowByte()`
 
       - Analog I/O:
-        - [x] analogRead()
-        - [x] analogWrite()
-        - [x] analogReadResolution()
-        - [x] analogWriteResolution()
+        - [x] `analogRead()`
+        - [x] `analogWrite()`
+        - [x] `analogReadResolution()`
+        - [x] `analogWriteResolution()`
 
       - Advanced I/O:
-        - [x] noTone()
-        - [x] pulseIn()
-        - [x] pulseInLong()
-        - [x] shiftIn()
-        - [x] shiftOut()
-        - [x] tone()
+        - [x] `noTone()`
+        - [x] `pulseIn()`
+        - [x] `pulseInLong()`
+        - [x] `shiftIn()`
+        - [x] `shiftOut()`
+        - [x] `tone()`
 
       - External Interrupts:
-        - [x] attachInterrupt()
-        - [x] detachInterrupt()
+        - [x] `attachInterrupt()`
+        - [x] `detachInterrupt()`
 
       - Interrupts:
-        - [x] interrupts()
-        - [x] noInterrupts()
+        - [x] `interrupts()`
+        - [x] `noInterrupts()`
 
       - Characters:
-        - [x] isAlpha()
-        - [x] isAlphaNumeric()
-        - [x] isAscii()
-        - [x] isControl()
-        - [x] isDigit()
-        - [x] isGraph()
-        - [x] isHexadecimalDigit()
-        - [x] isLowerCase()
-        - [x] isPrintable()
-        - [x] isPunct()
-        - [x] isSpace()
-        - [x] isUpperCase()
-        - [x] isWhitespace()
+        - [x] `isAlpha()`
+        - [x] `isAlphaNumeric()`
+        - [x] `isAscii()`
+        - [x] `isControl()`
+        - [x] `isDigit()`
+        - [x] `isGraph()`
+        - [x] `isHexadecimalDigit()`
+        - [x] `isLowerCase()`
+        - [x] `isPrintable()`
+        - [x] `isPunct()`
+        - [x] `isSpace()`
+        - [x] `isUpperCase()`
+        - [x] `isWhitespace()`
 
       - Communication:
-        - [ ] Serial
-        - [ ] SPI
-        - [ ] Stream
-        - [ ] Wire
+        - [ ] `Serial`
+        - [ ] `SPI`
+        - [ ] `Stream`
+        - [ ] `Wire`
 
     </p>
     </details>
