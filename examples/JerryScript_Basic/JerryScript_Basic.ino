@@ -13,6 +13,8 @@ void setup() {
   /* Wait Serial */
   while (!Serial) {}
 
+  printf("\n");
+  printf("Arduino Core API: %d.%d.%d\n", CORE_MAJOR, CORE_MINOR, CORE_PATCH);
   printf("Mbed OS API: %d.%d.%d\n", MBED_MAJOR_VERSION, MBED_MINOR_VERSION, MBED_PATCH_VERSION);
   printf("JerryScript API: %d.%d.%d\n", JERRY_API_MAJOR_VERSION, JERRY_API_MINOR_VERSION, JERRY_API_PATCH_VERSION);
 
