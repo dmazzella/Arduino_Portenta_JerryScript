@@ -54,6 +54,8 @@
  *                                   Extra API                                 *
  ******************************************************************************/
 
+#define JERRYXX_ARRAY_SIZE(array) ((jerry_length_t) (sizeof (array) / sizeof ((array)[0])))
+
 #define JERRYXX_MAX_THREADS_NUMBER 20
 
 #define JERRYXX_BOOL_CHK(f)  \

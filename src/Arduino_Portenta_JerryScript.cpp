@@ -451,7 +451,7 @@ JERRYXX_DECLARE_FUNCTION(set_timeout)
     jerryx_arg_uint32 (&delay_time, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -498,7 +498,7 @@ JERRYXX_DECLARE_FUNCTION(clear_timeout)
     jerryx_arg_uint32 (&timeout_id, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -536,7 +536,7 @@ JERRYXX_DECLARE_FUNCTION(set_interval)
     jerryx_arg_uint32 (&delay_time, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -586,7 +586,7 @@ JERRYXX_DECLARE_FUNCTION(clear_interval)
     jerryx_arg_uint32 (&interval_id, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -777,7 +777,7 @@ JERRYXX_DECLARE_FUNCTION(pin_mode)
     jerryx_arg_uint32 (&mode, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -808,7 +808,7 @@ JERRYXX_DECLARE_FUNCTION(digital_write)
     jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -837,7 +837,7 @@ JERRYXX_DECLARE_FUNCTION(digital_read)
     jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -859,7 +859,7 @@ JERRYXX_DECLARE_FUNCTION(delay)
     jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -883,7 +883,7 @@ JERRYXX_DECLARE_FUNCTION(delay_microseconds)
     jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -931,7 +931,7 @@ JERRYXX_DECLARE_FUNCTION(random_seed)
     jerryx_arg_uint32 (&seed, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -957,7 +957,7 @@ JERRYXX_DECLARE_FUNCTION(random)
     jerryx_arg_uint32 (&b, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -988,7 +988,7 @@ JERRYXX_DECLARE_FUNCTION(analog_read)
     jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1012,7 +1012,7 @@ JERRYXX_DECLARE_FUNCTION(analog_write)
     jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1036,7 +1036,7 @@ JERRYXX_DECLARE_FUNCTION(analog_read_resolution)
     jerryx_arg_uint32 (&bits, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1060,7 +1060,7 @@ JERRYXX_DECLARE_FUNCTION(analog_write_resolution)
     jerryx_arg_uint32 (&bits, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1116,7 +1116,7 @@ JERRYXX_DECLARE_FUNCTION(attach_interrupt)
     jerryx_arg_uint32 (&mode, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1146,7 +1146,7 @@ JERRYXX_DECLARE_FUNCTION(detach_interrupt)
     jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1170,7 +1170,7 @@ JERRYXX_DECLARE_FUNCTION(no_tone)
     jerryx_arg_uint32 (&pin, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1198,7 +1198,7 @@ JERRYXX_DECLARE_FUNCTION(pulse_in)
     jerryx_arg_uint32 (&timeout, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1224,7 +1224,7 @@ JERRYXX_DECLARE_FUNCTION(pulse_in_long)
     jerryx_arg_uint32 (&timeout, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1250,7 +1250,7 @@ JERRYXX_DECLARE_FUNCTION(shift_in)
     jerryx_arg_uint32 (&bitOrder, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1283,7 +1283,7 @@ JERRYXX_DECLARE_FUNCTION(shift_out)
     jerryx_arg_uint32 (&value, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP,  JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 4);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1316,7 +1316,7 @@ JERRYXX_DECLARE_FUNCTION(tone)
     jerryx_arg_uint32 (&duration, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_OPTIONAL),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1341,7 +1341,7 @@ JERRYXX_DECLARE_FUNCTION(bit)
     jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1365,7 +1365,7 @@ JERRYXX_DECLARE_FUNCTION(bit_clear)
     jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1389,7 +1389,7 @@ JERRYXX_DECLARE_FUNCTION(bit_read)
     jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1413,7 +1413,7 @@ JERRYXX_DECLARE_FUNCTION(bit_set)
     jerryx_arg_uint32 (&n, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 2);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1441,7 +1441,7 @@ JERRYXX_DECLARE_FUNCTION(bit_write)
     jerryx_arg_uint32 (&b, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1465,7 +1465,7 @@ JERRYXX_DECLARE_FUNCTION(high_byte)
     jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1487,7 +1487,7 @@ JERRYXX_DECLARE_FUNCTION(low_byte)
     jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1513,7 +1513,7 @@ JERRYXX_DECLARE_FUNCTION(constrain)
     jerryx_arg_uint32 (&b, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 3);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1543,7 +1543,7 @@ JERRYXX_DECLARE_FUNCTION(map)
     jerryx_arg_uint32 (&toHigh, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 5);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1565,7 +1565,7 @@ JERRYXX_DECLARE_FUNCTION(sq)
     jerryx_arg_uint32 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1587,7 +1587,7 @@ JERRYXX_DECLARE_FUNCTION(is_alpha)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1609,7 +1609,7 @@ JERRYXX_DECLARE_FUNCTION(is_alpha_numeric)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1631,7 +1631,7 @@ JERRYXX_DECLARE_FUNCTION(is_ascii)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1653,7 +1653,7 @@ JERRYXX_DECLARE_FUNCTION(is_control)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1675,7 +1675,7 @@ JERRYXX_DECLARE_FUNCTION(is_digit)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1697,7 +1697,7 @@ JERRYXX_DECLARE_FUNCTION(is_graph)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1719,7 +1719,7 @@ JERRYXX_DECLARE_FUNCTION(is_hexadecimal_digit)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1741,7 +1741,7 @@ JERRYXX_DECLARE_FUNCTION(is_lower_case)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1763,7 +1763,7 @@ JERRYXX_DECLARE_FUNCTION(is_printable)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1785,7 +1785,7 @@ JERRYXX_DECLARE_FUNCTION(is_punct)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1807,7 +1807,7 @@ JERRYXX_DECLARE_FUNCTION(is_space)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1829,7 +1829,7 @@ JERRYXX_DECLARE_FUNCTION(is_upper_case)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
@@ -1851,7 +1851,7 @@ JERRYXX_DECLARE_FUNCTION(is_whitespace)
     jerryx_arg_int8 (&x, JERRYX_ARG_CEIL, JERRYX_ARG_NO_CLAMP, JERRYX_ARG_NO_COERCE, JERRYX_ARG_REQUIRED),
   };
 
-  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, 1);
+  const jerry_value_t rv = jerryx_arg_transform_args (args_p, args_cnt, mapping, JERRYXX_ARRAY_SIZE (mapping));
   if (jerry_value_is_exception (rv))
   {
     return rv;
